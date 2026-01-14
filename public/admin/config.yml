@@ -1,0 +1,99 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "public/uploads"
+public_folder: "/uploads"
+
+locale: "de"
+
+collections:
+  - name: "news"
+    label: "News"
+    label_singular: "News-Post"
+    folder: "src/content/news"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "Titel", name: "title", widget: "string" }
+      - { label: "Datum", name: "date", widget: "datetime" }
+      - { label: "Text", name: "body", widget: "markdown" }
+
+  - name: "spieler"
+    label: "Spieler"
+    label_singular: "Spieler"
+    folder: "src/content/spieler"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Name", name: "name", widget: "string" }
+      - { label: "Nummer", name: "number", widget: "number", value_type: "int" }
+      - { label: "Position", name: "position", widget: "string" }
+      - { label: "Foto", name: "photo", widget: "image", required: false }
+      - { label: "Bio / Stats", name: "body", widget: "markdown", required: false }
+
+  - name: "teams"
+    label: "Teams"
+    label_singular: "Team"
+    folder: "src/content/teams"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Teamname", name: "title", widget: "string" }
+      - { label: "Liga", name: "league", widget: "string", required: false }
+      - { label: "Beschreibung", name: "body", widget: "markdown", required: false }
+
+  - name: "games"
+    label: "Spielzeiten (Games)"
+    label_singular: "Game"
+    folder: "src/content/games"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "Datum", name: "date", widget: "datetime" }
+      - { label: "Gegner", name: "opponent", widget: "string" }
+      - { label: "Ort", name: "location", widget: "string" }
+      - { label: "Event-Info", name: "body", widget: "markdown", required: false }
+
+  - name: "trainings"
+    label: "Trainingszeiten"
+    label_singular: "Training"
+    folder: "src/content/trainings"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Wochentag", name: "weekday", widget: "select", options: ["Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag","Sonntag"] }
+      - { label: "Uhrzeit", name: "time", widget: "string" }
+      - { label: "Ort", name: "location", widget: "string" }
+      - { label: "Notiz", name: "note", widget: "string", required: false }
+
+  - name: "sponsoren"
+    label: "Sponsoren"
+    label_singular: "Sponsor"
+    folder: "src/content/sponsoren"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Name", name: "name", widget: "string" }
+      - { label: "Logo", name: "logo", widget: "image" }
+      - { label: "Link", name: "url", widget: "string", required: false }
+      - { label: "Tier", name: "tier", widget: "select", options: ["Gold", "Silver", "Bronze"], default: "Silver" }
+      - { label: "Text", name: "body", widget: "markdown", required: false }
+
+  - name: "site"
+    label: "Website-Texte"
+    files:
+      - label: "Verein / About"
+        name: "about"
+        file: "src/content/site/about.md"
+        fields:
+          - { label: "Titel", name: "title", widget: "string" }
+          - { label: "Text", name: "body", widget: "markdown" }
+      - label: "Kontakt"
+        name: "contact"
+        file: "src/content/site/contact.md"
+        fields:
+          - { label: "Titel", name: "title", widget: "string" }
+          - { label: "Instagram", name: "instagram", widget: "string", required: false }
+          - { label: "E-Mail", name: "email", widget: "string", required: false }
+          - { label: "Text", name: "body", widget: "markdown", required: false }
