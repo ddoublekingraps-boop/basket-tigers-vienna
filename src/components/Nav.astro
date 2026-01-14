@@ -1,0 +1,27 @@
+---
+const links = [
+  { href: '/', label: 'Home' },
+  { href: '/spieler', label: 'Spieler' },
+  { href: '/teams', label: 'Teams' },
+  { href: '/spielzeiten', label: 'Spielzeiten' },
+  { href: '/trainingszeiten', label: 'Trainingszeiten' },
+  { href: '/sponsoren', label: 'Sponsoren' },
+  { href: '/verein', label: 'Verein' },
+  { href: '/kontakt', label: 'Kontakt' },
+];
+---
+<header style="position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);background:rgba(7,9,15,.7);border-bottom:1px solid var(--line);">
+  <div class="container" style="display:flex;align-items:center;justify-content:space-between;gap:14px;padding-top:14px;padding-bottom:14px;">
+    <a href="/" style="display:flex;align-items:center;gap:10px;font-weight:1000;">
+      <img src="/assets/logo.png" alt="Basket Tigers Vienna Logo" width="38" height="38" style="border-radius:12px;box-shadow:0 16px 40px rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.10)" />
+      <span>Basket Tigers Vienna</span>
+    </a>
+
+    <nav aria-label="Navigation" style="display:flex;gap:14px;flex-wrap:wrap;justify-content:flex-end;">
+      {links.map(l => (
+        <a href={l.href} style="color:var(--muted);font-weight:800;font-size:14px;">{l.label}</a>
+      ))}
+      <a class="btn" href="/kontakt">Mitmachen</a>
+    </nav>
+  </div>
+</header>

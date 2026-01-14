@@ -1,0 +1,24 @@
+---
+import Base from "../layouts/Base.astro";
+import { getCollection } from "astro:content";
+
+const sponsoren = await getCollection("sponsoren");
+const tierOrder = { Gold: 0, Silver: 1, Bronze: 2 };
+sponsoren.sort((a,b)=> tierOrder[a.data.tier]-tierOrder[b.data.tier]);
+---
+<Base title="Sponsoren – Basket Tigers Vienna">
+  <h1 class="h1" style="margin:22px 0 14px;">Sponsoren</h1>
+  <div class="grid3">
+    {sponsoren.map(s => (
+      <article class="card" style="padding:16px;">
+        <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;">
+          <div style="font-weight:1000">{s.data.name}</div>
+          <span class={"badge " + s.data.tier.toLowerCase()}>{s.data.tier}</span>
+        </div>
+        <img src={s.data.logo} alt={s.data.name} style="margin-top:12px;border-radius:14px;border:1px solid var(--line);background:white; padding:10px;" />
+        {s.body ? <p class="p" style="margin:10px 0 0;">{s.body}</p> : null}
+        {s.data.url ? <div style="margin-top:10px;"><a class="btn2" href={s.data.url} target="_blank" rel="noreferrer">Website</a></div> : null}
+      </article>
+    ))}
+  </div>
+</Base>

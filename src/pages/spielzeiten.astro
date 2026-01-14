@@ -1,0 +1,25 @@
+---
+import Base from "../layouts/Base.astro";
+import { getCollection } from "astro:content";
+
+const games = (await getCollection("games")).sort((a,b)=> a.data.date.getTime()-b.data.date.getTime());
+---
+<Base title="Spielzeiten – Basket Tigers Vienna">
+  <h1 class="h1" style="margin:22px 0 14px;">Spielzeiten</h1>
+  <div class="card" style="padding:18px;">
+    <table class="table">
+      <thead>
+        <tr><th>Datum</th><th>Gegner</th><th>Ort</th></tr>
+      </thead>
+      <tbody>
+        {games.map(g => (
+          <tr>
+            <td>{g.data.date.toLocaleString('de-AT', { dateStyle:'medium', timeStyle:'short' })}</td>
+            <td>{g.data.opponent}</td>
+            <td>{g.data.location}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</Base>

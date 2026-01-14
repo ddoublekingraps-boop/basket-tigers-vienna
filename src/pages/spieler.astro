@@ -1,0 +1,26 @@
+---
+import Base from "../layouts/Base.astro";
+import { getCollection } from "astro:content";
+
+const spieler = (await getCollection("spieler")).sort((a,b)=> (a.data.number ?? 0) - (b.data.number ?? 0));
+---
+<Base title="Spieler – Basket Tigers Vienna">
+  <h1 class="h1" style="margin:22px 0 14px;">Spieler</h1>
+  <div class="grid3">
+    {spieler.map(p => (
+      <article class="card" style="padding:16px;">
+        <div style="display:flex;gap:12px;align-items:center;">
+          <div style="width:54px;height:54px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.03);display:flex;align-items:center;justify-content:center;font-weight:1000;">
+            #{p.data.number}
+          </div>
+          <div>
+            <div style="font-weight:1000">{p.data.name}</div>
+            <div class="kicker">{p.data.position}</div>
+          </div>
+        </div>
+        {p.data.photo ? <img src={p.data.photo} alt={p.data.name} style="margin-top:12px;border-radius:14px;border:1px solid var(--line);" /> : null}
+        {p.body ? <p class="p" style="margin:10px 0 0;">{p.body.slice(0,140)}{p.body.length>140?"…":""}</p> : null}
+      </article>
+    ))}
+  </div>
+</Base>

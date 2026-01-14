@@ -1,0 +1,12 @@
+---
+import Base from "../layouts/Base.astro";
+import { getEntry } from "astro:content";
+
+const about = await getEntry("site", "about");
+---
+<Base title="Verein – Basket Tigers Vienna">
+  <h1 class="h1" style="margin:22px 0 14px;">{about?.data.title ?? "Verein"}</h1>
+  <div class="card" style="padding:18px;">
+    <div class="p" style="white-space:pre-wrap">{about?.body ?? "Text im Admin ergänzen."}</div>
+  </div>
+</Base>

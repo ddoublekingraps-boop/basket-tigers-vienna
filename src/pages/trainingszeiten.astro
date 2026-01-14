@@ -1,0 +1,27 @@
+---
+import Base from "../layouts/Base.astro";
+import { getCollection } from "astro:content";
+
+const order = ["Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag","Sonntag"];
+const trainings = (await getCollection("trainings")).sort((a,b)=> order.indexOf(a.data.weekday) - order.indexOf(b.data.weekday));
+---
+<Base title="Trainingszeiten – Basket Tigers Vienna">
+  <h1 class="h1" style="margin:22px 0 14px;">Trainingszeiten</h1>
+  <div class="card" style="padding:18px;">
+    <table class="table">
+      <thead>
+        <tr><th>Tag</th><th>Zeit</th><th>Ort</th><th>Notiz</th></tr>
+      </thead>
+      <tbody>
+        {trainings.map(t => (
+          <tr>
+            <td style="font-weight:900">{t.data.weekday}</td>
+            <td>{t.data.time}</td>
+            <td>{t.data.location}</td>
+            <td class="kicker">{t.data.note ?? ""}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</Base>

@@ -1,0 +1,99 @@
+---
+import Base from "../layouts/Base.astro";
+import { getCollection } from "astro:content";
+
+const games = (await getCollection("games")).sort((a,b)=> b.data.date.getTime()-a.data.date.getTime()).slice(0,5);
+const news = (await getCollection("news")).sort((a,b)=> b.data.date.getTime()-a.data.date.getTime()).slice(0,3);
+---
+<Base title="Basket Tigers Vienna">
+  <section style="padding:34px 0 14px;">
+    <div class="grid2" style="align-items:stretch;">
+      <div>
+        <div class="kicker">Wien • Basketball • Community</div>
+        <h1 class="h1" style="margin-top:10px;">Basket Tigers Vienna</h1>
+        <p class="p" style="max-width:60ch;margin:14px 0 18px;">
+          Dunkel. Clean. Sportlich. Trainings, Games, Events – und eine Community, die Hunger hat.
+        </p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <a class="btn" href="/spielzeiten">Nächste Spiele</a>
+          <a class="btn2" href="/trainingszeiten">Trainingszeiten</a>
+        </div>
+        <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;">
+          <span class="badge">Orange / Weiß / Schwarz</span>
+          <span class="badge">Admin Login: /admin</span>
+          <span class="badge">Sponsoren Platz</span>
+        </div>
+      </div>
+
+      <div class="card" style="padding:18px;display:flex;gap:14px;align-items:center;">
+        <img src="/assets/logo.png" alt="Basket Tigers Vienna" style="width:120px;height:auto;border-radius:18px;border:1px solid var(--line);" />
+        <div>
+          <div class="kicker">est. 2025</div>
+          <div style="font-weight:1000;font-size:20px;margin:6px 0;">Spiel. Team. Hunger.</div>
+          <div class="p" style="margin:0;">Trag alle Inhalte im Admin-Panel ein – die Website aktualisiert sich automatisch.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="grid3" style="padding:10px 0;">
+    <div class="card" style="padding:16px;">
+      <div style="font-weight:1000">Tryouts</div>
+      <p class="p" style="margin:8px 0 0;">Melde dich an, komm vorbei, zeig Hustle & IQ. Kein Gelaber.</p>
+    </div>
+    <div class="card" style="padding:16px;">
+      <div style="font-weight:1000">Training</div>
+      <p class="p" style="margin:8px 0 0;">Shooting, Handles, Plays + Scrimmage. Fokus: besser werden.</p>
+    </div>
+    <div class="card" style="padding:16px;">
+      <div style="font-weight:1000">Events</div>
+      <p class="p" style="margin:8px 0 0;">Winner-takes-it-all, 3x3, 1v1 – plus Content für Socials.</p>
+    </div>
+  </section>
+
+  <section style="padding:18px 0 0;">
+    <div class="grid2">
+      <div class="card" style="padding:18px;">
+        <h2 class="h2">Nächste Spiele</h2>
+        <table class="table">
+          <thead>
+            <tr><th>Datum</th><th>Gegner</th><th>Ort</th></tr>
+          </thead>
+          <tbody>
+            {games.map(g => (
+              <tr>
+                <td>{g.data.date.toLocaleString('de-AT', { dateStyle:'medium', timeStyle:'short' })}</td>
+                <td>{g.data.opponent}</td>
+                <td>{g.data.location}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div style="margin-top:12px;"><a class="btn2" href="/spielzeiten">Alle Spielzeiten</a></div>
+      </div>
+
+      <div class="card" style="padding:18px;">
+        <h2 class="h2">News</h2>
+        <div style="display:grid;gap:10px;">
+          {news.map(n => (
+            <div style="border:1px solid var(--line);border-radius:14px;padding:12px;background:rgba(255,255,255,.02);">
+              <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+                <div style="font-weight:1000">{n.data.title}</div>
+                <div class="kicker">{n.data.date.toLocaleDateString('de-AT')}</div>
+              </div>
+              <div class="p" style="margin:6px 0 0;">{n.body.slice(0, 120)}{n.body.length>120 ? "…" : ""}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding:18px 0 8px;">
+    <div class="card" style="padding:18px;">
+      <h2 class="h2">Sponsoren</h2>
+      <p class="p" style="margin-top:0;">Logos & Links werden im Admin-Panel gepflegt.</p>
+      <a class="btn2" href="/sponsoren">Zu den Sponsoren</a>
+    </div>
+  </section>
+</Base>

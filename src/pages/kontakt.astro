@@ -1,0 +1,34 @@
+---
+import Base from "../layouts/Base.astro";
+import { getEntry } from "astro:content";
+
+const contact = await getEntry("site", "contact");
+---
+<Base title="Kontakt – Basket Tigers Vienna">
+  <h1 class="h1" style="margin:22px 0 14px;">{contact?.data.title ?? "Kontakt"}</h1>
+
+  <div class="grid2">
+    <div class="card" style="padding:18px;">
+      <h2 class="h2">Schreib uns</h2>
+      <p class="p" style="margin-top:0;">Socials und Kontaktinfos kannst du im Admin-Panel ändern.</p>
+      <div style="display:grid;gap:10px;">
+        <div style="border:1px solid var(--line);border-radius:14px;padding:12px;background:rgba(255,255,255,.02);">
+          <div class="kicker">Instagram</div>
+          <div style="font-weight:1000">{contact?.data.instagram ?? "@baskettigersvienna"}</div>
+        </div>
+        <div style="border:1px solid var(--line);border-radius:14px;padding:12px;background:rgba(255,255,255,.02);">
+          <div class="kicker">E-Mail</div>
+          <div style="font-weight:1000">{contact?.data.email ?? "contact@baskettigersvienna.at"}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="padding:18px;">
+      <h2 class="h2">Info</h2>
+      <div class="p" style="white-space:pre-wrap">{contact?.body ?? "Hier kann noch Text stehen (Tryouts, Zeiten, Location, etc.)."}</div>
+      <div style="margin-top:12px;">
+        <a class="btn2" href="/admin">Admin Login</a>
+      </div>
+    </div>
+  </div>
+</Base>

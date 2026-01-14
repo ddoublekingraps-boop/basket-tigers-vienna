@@ -1,0 +1,20 @@
+---
+import Base from "../layouts/Base.astro";
+import { getCollection } from "astro:content";
+
+const teams = await getCollection("teams");
+---
+<Base title="Teams – Basket Tigers Vienna">
+  <h1 class="h1" style="margin:22px 0 14px;">Teams</h1>
+  <div class="grid2">
+    {teams.map(t => (
+      <article class="card" style="padding:18px;">
+        <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline;">
+          <div style="font-weight:1000;font-size:18px;">{t.data.title}</div>
+          {t.data.league ? <span class="badge">{t.data.league}</span> : null}
+        </div>
+        {t.body ? <p class="p" style="margin:10px 0 0;">{t.body}</p> : <p class="p" style="margin:10px 0 0;">(Beschreibung im Admin ergänzen.)</p>}
+      </article>
+    ))}
+  </div>
+</Base>
