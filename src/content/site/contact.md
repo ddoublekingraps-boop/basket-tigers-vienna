@@ -1,7 +1,7 @@
 ---
-title: "Kontakt"
+title: Kontakt
 instagram: "@baskettigersvienna"
-email: "contact@baskettigersvienna.at"
+email: office@viennabasket-tigers.at
 ---
 Schreib uns auf Instagram oder per E-Mail.
 
