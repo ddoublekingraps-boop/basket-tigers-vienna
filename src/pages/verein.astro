@@ -5,8 +5,27 @@ import { getEntry } from "astro:content";
 const about = await getEntry("site", "about");
 ---
 <Base title="Verein – Basket Tigers Vienna">
-  <h1 class="h1" style="margin:22px 0 14px;">{about?.data.title ?? "Verein"}</h1>
-  <div class="card" style="padding:18px;">
-    <div class="p" style="white-space:pre-wrap">{about?.body ?? "Text im Admin ergänzen."}</div>
-  </div>
+  <section class="page-header">
+    <div class="container">
+      <div>
+        <span class="kicker eyebrow">Über uns</span>
+        <h1 class="h1" style="margin-top:10px;">{about?.data.title ?? "Verein"}</h1>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="container grid2" style="align-items:start;">
+      <div class="card pad">
+        <div class="p" style="white-space:pre-wrap; font-size:16px;">{about?.body ?? "Bald mehr über unseren Verein."}</div>
+      </div>
+      <div class="card cta-band" style="flex-direction:column; align-items:flex-start;">
+        <div>
+          <h2 class="h2">Werd Teil vom Rudel</h2>
+          <p class="p" style="margin-top:8px;">Tryouts, Training, Games – wir freuen uns auf dich.</p>
+        </div>
+        <a class="btn" href="/kontakt">Mitmachen →</a>
+      </div>
+    </div>
+  </section>
 </Base>

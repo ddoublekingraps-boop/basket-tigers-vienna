@@ -60,6 +60,9 @@ const site = defineCollection({
   schema: z.object({
     title: z.string(),
     instagram: z.string().optional(),
+    tiktok: z.string().optional(),
+    youtube: z.string().optional(),
+    facebook: z.string().optional(),
     email: z.string().optional(),
   }).passthrough(),
 });

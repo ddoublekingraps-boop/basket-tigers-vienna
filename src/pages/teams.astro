@@ -5,16 +5,33 @@ import { getCollection } from "astro:content";
 const teams = await getCollection("teams");
 ---
 <Base title="Teams – Basket Tigers Vienna">
-  <h1 class="h1" style="margin:22px 0 14px;">Teams</h1>
-  <div class="grid2">
-    {teams.map(t => (
-      <article class="card" style="padding:18px;">
-        <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline;">
-          <div style="font-weight:1000;font-size:18px;">{t.data.title}</div>
-          {t.data.league ? <span class="badge">{t.data.league}</span> : null}
+  <section class="page-header">
+    <div class="container">
+      <div>
+        <span class="kicker eyebrow">Das Rudel</span>
+        <h1 class="h1" style="margin-top:10px;">Teams</h1>
+      </div>
+      <a class="btn2 btn-sm" href="/spieler">Zum Kader →</a>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="container">
+      {teams.length === 0 ? (
+        <div class="card pad"><p class="p">Bald mehr über unsere Teams.</p></div>
+      ) : (
+        <div class="grid2">
+          {teams.map(t => (
+            <article class="card card-hover pad">
+              <div style="display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:center;">
+                <h2 class="h3" style="font-size:22px;">{t.data.title}</h2>
+                {t.data.league ? <span class="badge">{t.data.league}</span> : null}
+              </div>
+              <p class="p" style="margin-top:12px;">{t.body ? t.body : "Mehr Infos folgen bald."}</p>
+            </article>
+          ))}
         </div>
-        {t.body ? <p class="p" style="margin:10px 0 0;">{t.body}</p> : <p class="p" style="margin:10px 0 0;">(Beschreibung im Admin ergänzen.)</p>}
-      </article>
-    ))}
-  </div>
+      )}
+    </div>
+  </section>
 </Base>

@@ -94,6 +94,9 @@ collections:
         file: "src/content/site/contact.md"
         fields:
           - { label: "Titel", name: "title", widget: "string" }
-          - { label: "Instagram", name: "instagram", widget: "string", required: false }
+          - { label: "Instagram (Link)", name: "instagram", widget: "string", required: false, hint: "Voller Link, z.B. https://instagram.com/baskettigersvienna" }
+          - { label: "TikTok (Link)", name: "tiktok", widget: "string", required: false, hint: "Voller Link, leer lassen wenn nicht vorhanden" }
+          - { label: "YouTube (Link)", name: "youtube", widget: "string", required: false, hint: "Voller Link, leer lassen wenn nicht vorhanden" }
+          - { label: "Facebook (Link)", name: "facebook", widget: "string", required: false, hint: "Voller Link, leer lassen wenn nicht vorhanden" }
           - { label: "E-Mail", name: "email", widget: "string", required: false }
           - { label: "Text", name: "body", widget: "markdown", required: false }

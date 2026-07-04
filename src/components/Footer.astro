@@ -1,10 +1,39 @@
-<footer style="border-top:1px solid var(--line);margin-top:28px;">
-  <div class="container" style="padding-top:22px;padding-bottom:36px;display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;">
-    <div style="color:var(--muted);font-weight:800">© {new Date().getFullYear()} Basket Tigers Vienna</div>
-    <div style="color:var(--muted);display:flex;gap:12px;flex-wrap:wrap;">
-      <a href="/verein">Verein</a>
-      <a href="/kontakt">Kontakt</a>
-      <a href="/admin">Admin</a>
+---
+import Socials from "./Socials.astro";
+const year = new Date().getFullYear();
+---
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-main">
+      <div class="footer-brand">
+        <a href="/" class="brand" aria-label="Basket Tigers Vienna – Startseite">
+          <img src="/assets/logo.png" alt="" width="42" height="42" class="brand-logo" />
+          <span class="brand-name">Basket Tigers<small>Vienna</small></span>
+        </a>
+        <p class="p">Basketball-Community aus Wien. Spiel. Team. Hunger. — Komm vorbei und werd Teil des Rudels.</p>
+        <Socials label="Folge uns" />
+      </div>
+
+      <div class="footer-col">
+        <h4>Verein</h4>
+        <a href="/teams">Teams</a>
+        <a href="/spieler">Spieler</a>
+        <a href="/verein">Über uns</a>
+        <a href="/sponsoren">Sponsoren</a>
+      </div>
+
+      <div class="footer-col">
+        <h4>Spielbetrieb</h4>
+        <a href="/spielzeiten">Spiele</a>
+        <a href="/trainingszeiten">Training</a>
+        <a href="/news">News</a>
+        <a href="/kontakt">Kontakt</a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© {year} Basket Tigers Vienna</span>
+      <span>Made in Vienna 🐅🏀</span>
     </div>
   </div>
 </footer>

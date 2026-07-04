@@ -2,4 +2,4 @@
 title: "First Team"
 league: "Wien"
 ---
-Beschreibung im Admin ergänzen.
+Unser erstes Herrenteam – Fokus auf Entwicklung, Teamplay und harte Defense.
