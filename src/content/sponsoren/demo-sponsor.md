@@ -1,6 +1,6 @@
 ---
-name: Demnächst!
-logo: /assets/logo.png
-url: TBD
+name: Restaurant Servus & Mahlzeit
+logo: /uploads/logo.png
+url: https://restaurant-mahlzeit.at/
 ---
-Kurztext: Lasst euch überraschen.
+Gönnt euch köstliche Mahlzeiten bei unserem Sponsor!
