@@ -2,25 +2,195 @@
 import Base from "../layouts/Base.astro";
 import { getCollection } from "astro:content";
 
-const spieler = (await getCollection("spieler")).sort((a,b)=> (a.data.number ?? 0) - (b.data.number ?? 0));
+const allTeams = await getCollection("teams");
+const allPlayers = await getCollection("spieler");
+
+// Natural team order
+const order = ["Basket Tigers 1", "Basket Tigers 2", "Basket Tigers 3", "Basket Tigers U19"];
+const teams = [...allTeams].sort((a, b) => {
+  const ia = order.indexOf(a.data.title);
+  const ib = order.indexOf(b.data.title);
+  if (ia !== -1 && ib !== -1) return ia - ib;
+  return a.data.title.localeCompare(b.data.title);
+});
+
+// Helper to normalize team names for loose matching
+const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+// Group players by team
+const teamData = teams.map(team => {
+  const teamNorm = norm(team.data.title);
+  const players = allPlayers
+    .filter(p => {
+      const pNorm = norm(p.data.team);
+      return pNorm === teamNorm ||
+        (teamNorm.includes("tigers1") && (pNorm.includes("herren1") || pNorm.includes("tigers1"))) ||
+        (teamNorm.includes("tigers2") && (pNorm.includes("herren2") || pNorm.includes("tigers2"))) ||
+        (teamNorm.includes("tigers3") && (pNorm.includes("herren3") || pNorm.includes("tigers3"))) ||
+        (teamNorm.includes("u19") && pNorm.includes("u19"));
+    })
+    .sort((a, b) => {
+      const na = a.data.number ?? 999;
+      const nb = b.data.number ?? 999;
+      if (na !== nb) return na - nb;
+      return a.data.name.localeCompare(b.data.name);
+    });
+
+  return {
+    team,
+    players,
+  };
+});
 ---
-<Base title="Spieler – Basket Tigers Vienna">
-  <h1 class="h1" style="margin:22px 0 14px;">Spieler</h1>
-  <div class="grid3">
-    {spieler.map(p => (
-      <article class="card" style="padding:16px;">
-        <div style="display:flex;gap:12px;align-items:center;">
-          <div style="width:54px;height:54px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.03);display:flex;align-items:center;justify-content:center;font-weight:1000;">
-            #{p.data.number}
-          </div>
-          <div>
-            <div style="font-weight:1000">{p.data.name}</div>
-            <div class="kicker">{p.data.position}</div>
-          </div>
-        </div>
-        {p.data.photo ? <img src={p.data.photo} alt={p.data.name} style="margin-top:12px;border-radius:14px;border:1px solid var(--line);" /> : null}
-        {p.body ? <p class="p" style="margin:10px 0 0;">{p.body.slice(0,140)}{p.body.length>140?"…":""}</p> : null}
-      </article>
-    ))}
-  </div>
+<Base title="Spieler & Kader – Basket Tigers Vienna">
+  <section class="page-header">
+    <div class="container">
+      <div>
+        <span class="kicker eyebrow">Kader</span>
+        <h1 class="h1" style="margin-top:10px;">Spieler & Coaches</h1>
+      </div>
+      <a class="btn2 btn-sm" href="/teams">Zu den Teams →</a>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="container">
+      <!-- Team Filter Bar -->
+      <nav class="team-filter-bar" aria-label="Team Filter">
+        <button type="button" class="team-filter-btn is-active" data-team-filter="all">Alle Teams</button>
+        {teams.map(t => (
+          <button type="button" class="team-filter-btn" data-team-filter={t.data.title}>
+            {t.data.title}
+          </button>
+        ))}
+      </nav>
+
+      <!-- Team Groups -->
+      <div id="roster-container">
+        {teamData.map(({ team, players }) => (
+          <section class="team-group" data-team-name={team.data.title} id={`team-${norm(team.data.title)}`}>
+            <div class="team-header-row">
+              <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                <h2 class="h2" style="font-size:clamp(22px, 3vw, 28px); margin:0;">{team.data.title}</h2>
+                {team.data.league ? <span class="badge gold">{team.data.league}</span> : null}
+              </div>
+              <span class="badge" style="letter-spacing:1px;">{players.length} Spieler</span>
+            </div>
+
+            <!-- Coaches Box Above Players -->
+            <div class="team-coaches-card">
+              <div class="team-coaches-icon" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                  <circle cx="9" cy="7" r="4"/>
+                  <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+              </div>
+              <div class="team-coaches-content">
+                <span class="team-coaches-label">Trainer-Team</span>
+                <div class="team-coaches-body">{team.body ? team.body : "Coaches werden bald bekanntgegeben."}</div>
+              </div>
+            </div>
+
+            <!-- Player Grid -->
+            {players.length === 0 ? (
+              <div class="card pad"><p class="p">Noch keine Spieler für dieses Team eingetragen.</p></div>
+            ) : (
+              <div class="player-grid">
+                {players.map(p => (
+                  <article class="player-card">
+                    <img
+                      src={p.data.photo || "/assets/default-player.svg"}
+                      alt={p.data.name}
+                      class="player-avatar"
+                      width="48"
+                      height="48"
+                      loading="lazy"
+                    />
+                    <div class="player-meta">
+                      <div class="player-name">{p.data.name}</div>
+                      <div class="player-role">{p.data.position || "Spieler"}</div>
+                    </div>
+                    <div class="player-num-badge">
+                      {p.data.number !== undefined && p.data.number !== null ? `#${p.data.number}` : "–"}
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
+          </section>
+        ))}
+      </div>
+    </div>
+  </section>
 </Base>
+
+<script>
+  function setupFilters() {
+    const buttons = document.querySelectorAll<HTMLButtonElement>('[data-team-filter]');
+    const groups = document.querySelectorAll<HTMLElement>('.team-group');
+    if (!buttons.length || !groups.length) return;
+
+    const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+    function filterTeam(target: string, updateUrl = true) {
+      const targetNorm = norm(target);
+
+      buttons.forEach(btn => {
+        const btnFilter = btn.getAttribute('data-team-filter') || 'all';
+        const isMatch = (target === 'all' && btnFilter === 'all') || (target !== 'all' && norm(btnFilter) === targetNorm);
+        btn.classList.toggle('is-active', isMatch);
+      });
+
+      groups.forEach(group => {
+        const groupTeam = group.getAttribute('data-team-name') || '';
+        const groupNorm = norm(groupTeam);
+        const shouldShow = target === 'all' || groupNorm === targetNorm || groupNorm.includes(targetNorm) || targetNorm.includes(groupNorm);
+        group.style.display = shouldShow ? 'block' : 'none';
+      });
+
+      if (updateUrl) {
+        const url = new URL(window.location.href);
+        if (target === 'all') {
+          url.searchParams.delete('team');
+        } else {
+          url.searchParams.set('team', target);
+        }
+        window.history.replaceState(null, '', url.toString());
+      }
+    }
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const filterVal = btn.getAttribute('data-team-filter') || 'all';
+        filterTeam(filterVal, true);
+      });
+    });
+
+    // Handle initial load from query param or hash
+    const params = new URLSearchParams(window.location.search);
+    const teamParam = params.get('team');
+    const hashParam = window.location.hash.replace(/^#team-|^#/, '');
+
+    const initial = teamParam || hashParam;
+    if (initial) {
+      // Find matching button
+      const initialNorm = norm(initial);
+      const matchedBtn = Array.from(buttons).find(b => {
+        const val = b.getAttribute('data-team-filter') || '';
+        const vNorm = norm(val);
+        return vNorm === initialNorm || vNorm.includes(initialNorm) || initialNorm.includes(vNorm);
+      });
+
+      if (matchedBtn) {
+        const filterVal = matchedBtn.getAttribute('data-team-filter') || 'all';
+        filterTeam(filterVal, false);
+      }
+    }
+  }
+
+  // Run on page load
+  setupFilters();
+  document.addEventListener('astro:page-load', setupFilters);
+</script>

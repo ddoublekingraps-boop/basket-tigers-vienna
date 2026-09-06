@@ -1,0 +1,57 @@
+---
+import Base from "../layouts/Base.astro";
+import { getCollection } from "astro:content";
+
+const allNews = (await getCollection("news")).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime()
+);
+
+const deDate = (d: Date) => d.toLocaleDateString("de-AT", { timeZone: "Europe/Vienna", day: "2-digit" });
+const deMonth = (d: Date) => d.toLocaleDateString("de-AT", { timeZone: "Europe/Vienna", month: "short" }).replace(".", "");
+const deFull = (d: Date) => d.toLocaleString("de-AT", { timeZone: "Europe/Vienna", dateStyle: "medium", timeStyle: "short" });
+
+const newsWithContent = await Promise.all(
+  allNews.map(async (n) => {
+    const { Content } = await n.render();
+    return { entry: n, Content };
+  })
+);
+---
+<Base title="News – Basket Tigers Vienna">
+  <section class="page-header">
+    <div class="container">
+      <div>
+        <span class="kicker eyebrow">Aktuelles</span>
+        <h1 class="h1" style="margin-top:10px;">News</h1>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="container">
+      {newsWithContent.length === 0 ? (
+        <div class="card pad"><p class="p">Noch keine News eingetragen.</p></div>
+      ) : (
+        <div class="news-list">
+          {newsWithContent.map(({ entry: n, Content }) => (
+            <article class="card pad news-item">
+              <div class="news-date">
+                <div class="d">{deDate(n.data.date)}</div>
+                <div class="m">{deMonth(n.data.date)}</div>
+              </div>
+              <div style="flex:1; min-width:0;">
+                <div class="news-head">
+                  <h2 class="h3" style="font-size:22px;">{n.data.title}</h2>
+                  <span class="kicker" style="letter-spacing:1px; font-size:12px;">{deFull(n.data.date)} Uhr</span>
+                </div>
+                <div class="prose" style="margin-top:12px;">
+                  <Content />
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
+    </div>
+  </section>
+</Base>

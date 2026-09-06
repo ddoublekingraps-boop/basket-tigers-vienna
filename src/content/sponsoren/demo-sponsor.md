@@ -1,7 +1,7 @@
 ---
 name: "Demo Sponsor"
 logo: "/assets/logo.png"
-url: "https://example.com"
-tier: "Silver"
+url: "TBD"
+
 ---
-Kurztext: Danke für euren Support!
+Kurztext: Lasst euch überraschen.

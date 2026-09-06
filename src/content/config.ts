@@ -12,8 +12,9 @@ const spieler = defineCollection({
   type: 'content',
   schema: z.object({
     name: z.string(),
-    number: z.number().int(),
-    position: z.string(),
+    number: z.number().int().optional(),
+    team: z.string(),
+    position: z.string().optional().default('Spieler'),
     photo: z.string().optional(),
   }),
 });
@@ -29,7 +30,20 @@ const teams = defineCollection({
 const games = defineCollection({
   type: 'content',
   schema: z.object({
-    date: z.coerce.date(),
+    date: z.preprocess((val) => {
+      if (val === undefined || val === null || val === '') return 'TBD';
+      if (val instanceof Date) {
+        return isNaN(val.getTime()) ? 'TBD' : val;
+      }
+      if (typeof val === 'string') {
+        const trimmed = val.trim();
+        if (!trimmed || trimmed.toUpperCase() === 'TBD') return 'TBD';
+        const parsed = new Date(trimmed);
+        if (!isNaN(parsed.getTime())) return parsed;
+        return trimmed;
+      }
+      return val;
+    }, z.union([z.date(), z.string()]).optional().default('TBD')),
     opponent: z.string(),
     location: z.string(),
   }),
@@ -51,7 +65,7 @@ const sponsoren = defineCollection({
     name: z.string(),
     logo: z.string(),
     url: z.string().optional(),
-    tier: z.enum(['Gold','Silver','Bronze']).default('Silver'),
+    tier: z.string().optional(),
   }),
 });
 
@@ -60,6 +74,9 @@ const site = defineCollection({
   schema: z.object({
     title: z.string(),
     instagram: z.string().optional(),
+    tiktok: z.string().optional(),
+    youtube: z.string().optional(),
+    facebook: z.string().optional(),
     email: z.string().optional(),
   }).passthrough(),
 });

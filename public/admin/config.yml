@@ -1,3 +1,4 @@
+local_backend: true
 backend:
   name: git-gateway
   branch: main
@@ -27,8 +28,9 @@ collections:
     slug: "{{slug}}"
     fields:
       - { label: "Name", name: "name", widget: "string" }
-      - { label: "Nummer", name: "number", widget: "number", value_type: "int" }
-      - { label: "Position", name: "position", widget: "string" }
+      - { label: "Nummer", name: "number", widget: "number", value_type: "int", required: false }
+      - { label: "Team", name: "team", widget: "select", options: ["Basket Tigers 1", "Basket Tigers 2", "Basket Tigers 3", "Basket Tigers U19"] }
+      - { label: "Position", name: "position", widget: "string", default: "Spieler", required: false }
       - { label: "Foto", name: "photo", widget: "image", required: false }
       - { label: "Bio / Stats", name: "body", widget: "markdown", required: false }
 
@@ -48,9 +50,9 @@ collections:
     label_singular: "Game"
     folder: "src/content/games"
     create: true
-    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    slug: "{{slug}}"
     fields:
-      - { label: "Datum", name: "date", widget: "datetime" }
+      - { label: "Datum", name: "date", widget: "string", required: false, default: "TBD", hint: "Datum & Uhrzeit (z.B. 2026-09-20T18:30:00+02:00) oder TBD wenn noch nicht bekannt" }
       - { label: "Gegner", name: "opponent", widget: "string" }
       - { label: "Ort", name: "location", widget: "string" }
       - { label: "Event-Info", name: "body", widget: "markdown", required: false }
@@ -77,7 +79,6 @@ collections:
       - { label: "Name", name: "name", widget: "string" }
       - { label: "Logo", name: "logo", widget: "image" }
       - { label: "Link", name: "url", widget: "string", required: false }
-      - { label: "Tier", name: "tier", widget: "select", options: ["Gold", "Silver", "Bronze"], default: "Silver" }
       - { label: "Text", name: "body", widget: "markdown", required: false }
 
   - name: "site"
@@ -94,6 +95,9 @@ collections:
         file: "src/content/site/contact.md"
         fields:
           - { label: "Titel", name: "title", widget: "string" }
-          - { label: "Instagram", name: "instagram", widget: "string", required: false }
+          - { label: "Instagram (Link)", name: "instagram", widget: "string", required: false, hint: "Voller Link, z.B. https://instagram.com/baskettigersvienna" }
+          - { label: "TikTok (Link)", name: "tiktok", widget: "string", required: false, hint: "Voller Link, leer lassen wenn nicht vorhanden" }
+          - { label: "YouTube (Link)", name: "youtube", widget: "string", required: false, hint: "Voller Link, leer lassen wenn nicht vorhanden" }
+          - { label: "Facebook (Link)", name: "facebook", widget: "string", required: false, hint: "Voller Link, leer lassen wenn nicht vorhanden" }
           - { label: "E-Mail", name: "email", widget: "string", required: false }
           - { label: "Text", name: "body", widget: "markdown", required: false }

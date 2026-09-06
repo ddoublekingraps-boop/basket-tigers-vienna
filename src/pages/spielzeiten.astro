@@ -2,24 +2,61 @@
 import Base from "../layouts/Base.astro";
 import { getCollection } from "astro:content";
 
-const games = (await getCollection("games")).sort((a,b)=> a.data.date.getTime()-b.data.date.getTime());
+const now = Date.now();
+const allGames = await getCollection("games");
+
+const isRealDate = (d: unknown): d is Date => d instanceof Date && !isNaN(d.getTime());
+
+const getTimeValue = (d: unknown) => {
+  if (isRealDate(d)) return d.getTime();
+  return Infinity; // TBD games at the end of upcoming schedule
+};
+
+const games = allGames.sort((a,b) => getTimeValue(a.data.date) - getTimeValue(b.data.date));
 ---
-<Base title="Spielzeiten – Basket Tigers Vienna">
-  <h1 class="h1" style="margin:22px 0 14px;">Spielzeiten</h1>
-  <div class="card" style="padding:18px;">
-    <table class="table">
-      <thead>
-        <tr><th>Datum</th><th>Gegner</th><th>Ort</th></tr>
-      </thead>
-      <tbody>
-        {games.map(g => (
-          <tr>
-            <td>{g.data.date.toLocaleString('de-AT', { dateStyle:'medium', timeStyle:'short' })}</td>
-            <td>{g.data.opponent}</td>
-            <td>{g.data.location}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
+<Base title="Spiele – Basket Tigers Vienna">
+  <section class="page-header">
+    <div class="container">
+      <div>
+        <span class="kicker eyebrow">Spielbetrieb</span>
+        <h1 class="h1" style="margin-top:10px;">Spiele</h1>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="container">
+      {games.length === 0 ? (
+        <div class="card pad"><p class="p">Noch keine Spiele eingetragen.</p></div>
+      ) : (
+        <div class="card pad">
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr><th>Datum</th><th>Gegner</th><th>Ort</th><th></th></tr>
+              </thead>
+              <tbody>
+                {games.map(g => {
+                  const isDate = isRealDate(g.data.date);
+                  const formattedDate = isDate
+                    ? g.data.date.toLocaleString('de-AT', { timeZone:'Europe/Vienna', dateStyle:'medium', timeStyle:'short' })
+                    : (g.data.date || 'TBD');
+                  const isUpcoming = isDate ? g.data.date.getTime() >= now : true;
+
+                  return (
+                    <tr>
+                      <td style="white-space:nowrap; font-weight:600;">{formattedDate}</td>
+                      <td style="font-family:var(--font-head); text-transform:uppercase; letter-spacing:.5px;">{g.data.opponent}</td>
+                      <td class="p">{g.data.location}</td>
+                      <td>{isUpcoming ? <span class="badge gold">Upcoming</span> : <span class="badge">Vorbei</span>}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
+  </section>
 </Base>

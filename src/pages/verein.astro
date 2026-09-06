@@ -5,8 +5,134 @@ import { getEntry } from "astro:content";
 const about = await getEntry("site", "about");
 ---
 <Base title="Verein – Basket Tigers Vienna">
-  <h1 class="h1" style="margin:22px 0 14px;">{about?.data.title ?? "Verein"}</h1>
-  <div class="card" style="padding:18px;">
-    <div class="p" style="white-space:pre-wrap">{about?.body ?? "Text im Admin ergänzen."}</div>
-  </div>
+  <section class="page-header">
+    <div class="container">
+      <div>
+        <span class="kicker eyebrow">Über uns</span>
+        <h1 class="h1" style="margin-top:10px;">{about?.data.title ?? "Über den Verein"}</h1>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="container about-grid">
+      <!-- Main Story & Founder Column -->
+      <article class="card pad story-card">
+        <div class="founder-block">
+          <!-- Founder Picture & Tag on Left -->
+          <div class="founder-frame">
+            <img
+              src="/assets/eduard-navarro.jpg"
+              alt="Eduard Navarro – Vereinspräsident & Head Coach"
+              class="founder-img"
+              width="240"
+              height="240"
+            />
+            <div class="founder-info">
+              <div class="founder-name">Eduard Navarro</div>
+              <div class="founder-role">Gründer &amp; Präsident</div>
+            </div>
+          </div>
+
+          <!-- Story Text Content -->
+          <div class="founder-story-content">
+            <span class="kicker" style="color:var(--orange); font-size:12px; letter-spacing:1.5px;">Die Tigers Story</span>
+            <h2 class="h2" style="font-size:24px; margin-top:4px; margin-bottom:14px;">Vom Bundesliga-Parkett zum eigenen Rudel</h2>
+            
+            <p class="p" style="font-size:15px; line-height:1.7; margin-bottom:12px;">
+              Basketball ist für Eduard Navarro seit seiner frühen Jugend mehr als nur ein Sport, es ist gelebte Leidenschaft. Über viele Jahre hinweg stand er selbst auf höchstem Niveau auf dem Parkett und spielte unter National als auch International.
+            </p>
+
+            <p class="p" style="font-size:15px; line-height:1.7; margin-bottom:12px;">
+              Nach verletzungsbedingten Rückschlägen und rund 11 prägenden Jahren bei den Vienna Timberwolves entdeckte Eduard an der Seitenlinie seine wahre Berufung. Als engagierter Head Coach betreute und formte er über viele Jahre hinweg diverse Herrenteams sowie zahlreiche Jugendmannschaften und gab sein Wissen mit großem Herzblut weiter.
+            </p>
+
+            <p class="p" style="font-size:15px; line-height:1.7; margin-bottom:12px;">
+              Im Jahr 2025 fasste er schließlich gemeinsam mit seiner Herrenmannschaft den Entschluss, seinen Lebenstraum Wirklichkeit werden zu lassen: die Gründung eines eigenen, unabhängigen Vereins. So wurden die <strong>Basket Tigers Vienna</strong> ins Leben gerufen ... ein Verein, der für Zusammenhalt, harte Arbeit und echte Familienatmosphäre steht.
+            </p>
+
+            <p class="p" style="font-size:15px; line-height:1.7;">
+              Das erklärte Ziel der Basket Tigers ist es, den Basketballsport in Wien mit noch mehr Freude, Dynamik und Energie zu bereichern. Egal auf welchem Erfahrungs oder Leistungslevel jemand einsteigt: Bei den Tigers wird das Beste aus jedem herausgeholt und jeder individuell auf und abseits des Courts gefördert.
+            </p>
+          </div>
+        </div>
+
+        <!-- Club Values / Highlights -->
+        <div class="about-features">
+          <div class="feature-pill">
+            <div class="feature-pill-icon">⚡</div>
+            <div>
+              <div class="feature-pill-title">Gegründet 2025</div>
+              <div class="feature-pill-desc">Aus purer Leidenschaft von Spielern für Spieler ins Leben gerufen.</div>
+            </div>
+          </div>
+
+          <div class="feature-pill">
+            <div class="feature-pill-icon">🏆</div>
+            <div>
+              <div class="feature-pill-title">Coaching-Erfahrung</div>
+              <div class="feature-pill-desc">Fundiertes Know-how und über 15 Jahre Coaching-Erfahrung.</div>
+            </div>
+          </div>
+
+          <div class="feature-pill">
+            <div class="feature-pill-icon">🤝</div>
+            <div>
+              <div class="feature-pill-title">Familiäres Rudel</div>
+              <div class="feature-pill-desc">Teamgeist, gegenseitiger Respekt und echte Vereinsgemeinschaft.</div>
+            </div>
+          </div>
+
+          <div class="feature-pill">
+            <div class="feature-pill-icon">📈</div>
+            <div>
+              <div class="feature-pill-title">Förderung für jedes Level</div>
+              <div class="feature-pill-desc">Wir holen das Beste aus jedem Spieler heraus.</div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Sidebar Column -->
+      <aside style="display:flex; flex-direction:column; gap:20px;">
+        <!-- Quick Facts Card -->
+        <div class="card pad">
+          <span class="kicker eyebrow" style="font-size:11px;">Vereinsfakten</span>
+          <h3 class="h3" style="font-size:20px; margin-top:6px; margin-bottom:16px;">Auf einen Blick</h3>
+          
+          <ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:12px; font-size:14px;">
+            <li style="display:flex; justify-content:space-between; border-bottom:1px solid var(--line); padding-bottom:8px;">
+              <span style="color:var(--muted);">Verein</span>
+              <span style="font-weight:600; color:var(--text);">Basket Tigers Vienna</span>
+            </li>
+            <li style="display:flex; justify-content:space-between; border-bottom:1px solid var(--line); padding-bottom:8px;">
+              <span style="color:var(--muted);">Gründungsjahr</span>
+              <span style="font-weight:600; color:var(--text);">2025</span>
+            </li>
+            <li style="display:flex; justify-content:space-between; border-bottom:1px solid var(--line); padding-bottom:8px;">
+              <span style="color:var(--muted);">Präsident &amp; Coach</span>
+              <span style="font-weight:600; color:var(--orange);">Eduard Navarro</span>
+            </li>
+            <li style="display:flex; justify-content:space-between; border-bottom:1px solid var(--line); padding-bottom:8px;">
+              <span style="color:var(--muted);">Standort</span>
+              <span style="font-weight:600; color:var(--text);">Wien, Österreich</span>
+            </li>
+            <li style="display:flex; justify-content:space-between; padding-bottom:2px;">
+              <span style="color:var(--muted);">Aktive Teams</span>
+              <span style="font-weight:600; color:var(--text);">4 Teams (Herren 1-3 &amp; U19)</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- CTA Card -->
+        <div class="card cta-band" style="flex-direction:column; align-items:flex-start;">
+          <div>
+            <h2 class="h2" style="font-size:22px;">Werd Teil vom Rudel</h2>
+            <p class="p" style="margin-top:8px; font-size:14px;">Tryouts, Training, Games – wir freuen uns auf dich.</p>
+          </div>
+          <a class="btn" href="/kontakt" style="width:100%; text-align:center;">Mitmachen →</a>
+        </div>
+      </aside>
+    </div>
+  </section>
 </Base>

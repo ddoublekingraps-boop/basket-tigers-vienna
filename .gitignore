@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+
+# Astro generated files
+.astro/
+
+# Build output
+dist/
+
+# IntelliJ
+.idea/
+*.iml
+
+# Environment variables
+.env
+.env.*

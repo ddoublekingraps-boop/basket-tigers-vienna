@@ -1,8 +1,9 @@
 ---
 title: Kontakt
-instagram: "@baskettigersvienna"
+instagram: "https://instagram.com/baskettigersvienna"
+tiktok: "https://www.tiktok.com/@baskettigersvienna?lang=de-DE"
 email: office@viennabasket-tigers.at
 ---
 Schreib uns auf Instagram oder per E-Mail.
 
-Tryouts/Anmeldung: (hier eintragen)
+Nächsten Tryouts/Anmeldungen: Derzeit geschlossen
