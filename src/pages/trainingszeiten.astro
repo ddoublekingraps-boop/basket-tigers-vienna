@@ -5,7 +5,7 @@ import { getCollection } from "astro:content";
 const order = ["Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag","Sonntag"];
 const trainings = (await getCollection("trainings")).sort((a,b)=> order.indexOf(a.data.weekday) - order.indexOf(b.data.weekday));
 ---
-<Base title="Training – Basket Tigers Vienna">
+<Base>
   <section class="page-header">
     <div class="container">
       <div>

@@ -1,0 +1,33 @@
+---
+import Base from "../layouts/Base.astro";
+---
+<Base
+  title="Seite nicht gefunden – Basket Tigers Vienna"
+  description="Diese Seite existiert nicht. Hier geht es zurück zur Startseite der Basket Tigers Vienna."
+  noindex={true}
+>
+  <section class="page-header">
+    <div class="container">
+      <div>
+        <span class="kicker eyebrow">Fehler 404</span>
+        <h1 class="h1" style="margin-top:10px;">Seite nicht gefunden</h1>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="container">
+      <div class="card pad">
+        <p class="p">
+          Diese Seite gibt es nicht – vielleicht wurde sie verschoben oder der Link ist veraltet.
+        </p>
+        <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:20px;">
+          <a class="btn" href="/">Zur Startseite →</a>
+          <a class="btn2 btn-sm" href="/teams/">Teams</a>
+          <a class="btn2 btn-sm" href="/spielzeiten/">Spiele</a>
+          <a class="btn2 btn-sm" href="/kontakt/">Kontakt</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>

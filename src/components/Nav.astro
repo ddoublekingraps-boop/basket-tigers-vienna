@@ -1,17 +1,23 @@
 ---
 const links = [
   { href: '/', label: 'Home' },
-  { href: '/teams', label: 'Teams' },
-  { href: '/spielzeiten', label: 'Spiele' },
-  { href: '/trainingszeiten', label: 'Training' },
-  { href: '/news', label: 'News' },
-  { href: '/verein', label: 'Verein' },
-  { href: '/kontakt', label: 'Kontakt' },
+  { href: '/teams/', label: 'Teams' },
+  { href: '/spielzeiten/', label: 'Spiele' },
+  { href: '/trainingszeiten/', label: 'Training' },
+  { href: '/news/', label: 'News' },
+  { href: '/verein/', label: 'Verein' },
+  { href: '/kontakt/', label: 'Kontakt' },
 ];
 
 const path = Astro.url.pathname;
-const isActive = (href: string) =>
-  href === '/' ? path === '/' : path === href || path.startsWith(href + '/');
+// Pfade auf eine Form mit Trailing Slash normalisieren, damit die aktive
+// Seite sowohl unter /teams als auch unter /teams/ erkannt wird.
+const withSlash = (p: string) => (p.endsWith('/') ? p : p + '/');
+const isActive = (href: string) => {
+  const target = withSlash(href);
+  const current = withSlash(path);
+  return target === '/' ? current === '/' : current === target || current.startsWith(target);
+};
 ---
 <header class="site-header">
   <div class="container nav-bar">
@@ -30,7 +36,7 @@ const isActive = (href: string) =>
       {links.map(l => (
         <a href={l.href} class={"nav-link" + (isActive(l.href) ? " is-active" : "")} aria-current={isActive(l.href) ? "page" : undefined}>{l.label}</a>
       ))}
-      <a class="btn btn-sm nav-cta" href="/kontakt">Mitmachen</a>
+      <a class="btn btn-sm nav-cta" href="/kontakt/">Mitmachen</a>
     </nav>
   </div>
 </header>

@@ -2,32 +2,128 @@
 import "../styles/global.css";
 import Nav from "../components/Nav.astro";
 import Footer from "../components/Footer.astro";
+import {
+  SITE_URL,
+  SITE_NAME,
+  LOCALE,
+  OG_IMAGE,
+  OG_IMAGE_WIDTH,
+  OG_IMAGE_HEIGHT,
+  canonicalPath,
+  canonicalUrl,
+  seoFor,
+} from "../data/seo";
+import { getEntry } from "astro:content";
 
-const {
-  title = "Basket Tigers Vienna",
-  description = "Basket Tigers Vienna – Basketball aus Wien. Teams, Spiele, Training, News & Community.",
-} = Astro.props;
+interface Props {
+  /** Überschreibt den Title aus src/data/seo.ts (normalerweise nicht nötig). */
+  title?: string;
+  /** Überschreibt die Description aus src/data/seo.ts. */
+  description?: string;
+  /** true = Seite aus dem Index nehmen (z. B. 404). */
+  noindex?: boolean;
+}
+
+const { title: titleProp, description: descriptionProp, noindex = false } = Astro.props as Props;
+
+// SEO-Daten kommen zentral aus src/data/seo.ts, Props können sie überschreiben.
+const path = canonicalPath(Astro.url.pathname);
+const seo = seoFor(path);
+
+const title = titleProp ?? seo?.title ?? SITE_NAME;
+const description =
+  descriptionProp ??
+  seo?.description ??
+  "Basket Tigers Vienna – Basketball aus Wien. Teams, Spiele, Training, News & Community.";
+
+const canonical = canonicalUrl(path);
+const ogTitle = seo?.ogTitle ?? title;
+const ogDescription = seo?.ogDescription ?? description;
+const ogImage = new URL(OG_IMAGE, SITE_URL).href;
+
+const isHome = path === "/";
+
+// Instagram-Profil aus dem CMS (Kontakt) für sameAs im JSON-LD.
+const contact = await getEntry("site", "contact");
+const instagram = contact?.data.instagram;
+const sameAs = [instagram].filter((v): v is string => typeof v === "string" && v.length > 0);
+
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "SportsOrganization",
+  "@id": `${SITE_URL}/#organization`,
+  name: "Basket Tigers",
+  alternateName: SITE_NAME,
+  sport: "Basketball",
+  url: `${SITE_URL}/`,
+  logo: new URL("/assets/logo.png", SITE_URL).href,
+  foundingDate: "2025",
+  email: "office@viennabasket-tigers.at",
+  telephone: "+43 699 17240540",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "Heinrich-von-Buol-Gasse 1/Top 85",
+    postalCode: "1210",
+    addressLocality: "Wien",
+    addressCountry: "AT",
+  },
+  ...(sameAs.length > 0 ? { sameAs } : {}),
+};
+
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": `${SITE_URL}/#website`,
+  name: SITE_NAME,
+  url: `${SITE_URL}/`,
+  inLanguage: "de-AT",
+  publisher: { "@id": `${SITE_URL}/#organization` },
+};
 ---
 <!doctype html>
-<html lang="de">
+<html lang="de-AT">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{title}</title>
     <meta name="description" content={description} />
+    {noindex ? (
+      <meta name="robots" content="noindex, follow" />
+    ) : (
+      <link rel="canonical" href={canonical} />
+    )}
     <meta name="theme-color" content="#0a0a0c" />
     <link rel="icon" type="image/png" href="/assets/logo.png" />
     <link rel="apple-touch-icon" href="/assets/logo.png" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:image" content="/assets/logo.png" />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:locale" content={LOCALE} />
+    <meta property="og:title" content={ogTitle} />
+    <meta property="og:description" content={ogDescription} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content={String(OG_IMAGE_WIDTH)} />
+    <meta property="og:image:height" content={String(OG_IMAGE_HEIGHT)} />
+    <meta property="og:image:alt" content="Logo der Basket Tigers Vienna" />
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={ogTitle} />
+    <meta name="twitter:description" content={ogDescription} />
+    <meta name="twitter:image" content={ogImage} />
+
     <!-- Fonts: lokal ausgeliefert, keine Verbindung zu Google -->
     <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/oswald-latin.woff2" as="font" type="font/woff2" crossorigin />
 
-    <title>{title}</title>
+    {isHome && (
+      <>
+        <script type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
+        <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
+      </>
+    )}
   </head>
   <body>
     <a href="#main" class="skip-link">Zum Inhalt springen</a>

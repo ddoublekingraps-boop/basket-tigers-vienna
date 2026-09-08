@@ -6,7 +6,7 @@ import { getEntry } from "astro:content";
 const contact = await getEntry("site", "contact");
 const email = contact?.data.email ?? "office@viennabasket-tigers.at";
 ---
-<Base title="Kontakt – Basket Tigers Vienna">
+<Base>
   <section class="page-header">
     <div class="container">
       <div>
@@ -34,7 +34,7 @@ const email = contact?.data.email ?? "office@viennabasket-tigers.at";
         <h2 class="h3" style="font-size:20px;">Info</h2>
         <div class="p" style="margin-top:8px; white-space:pre-wrap;">{contact?.body ?? "Hier kann noch Text stehen (Tryouts, Zeiten, Location, etc.)."}</div>
         <div style="margin-top:18px;">
-          <a class="btn" href="/spielzeiten">Nächste Spiele →</a>
+          <a class="btn" href="/spielzeiten/">Nächste Spiele →</a>
         </div>
       </div>
     </div>

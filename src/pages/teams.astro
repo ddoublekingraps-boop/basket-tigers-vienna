@@ -13,7 +13,7 @@ const teams = [...allTeams].sort((a, b) => {
   return a.data.title.localeCompare(b.data.title);
 });
 ---
-<Base title="Teams – Basket Tigers Vienna">
+<Base>
   <section class="page-header">
     <div class="container">
       <div>
@@ -31,7 +31,7 @@ const teams = [...allTeams].sort((a, b) => {
         <div class="grid2">
           {teams.map(t => (
             <a
-              href={`/spieler?team=${encodeURIComponent(t.data.title)}`}
+              href={`/spieler/?team=${encodeURIComponent(t.data.title)}`}
               class="card card-hover pad team-card-link"
               style="text-decoration:none; color:inherit; display:flex; flex-direction:column; justify-content:space-between; cursor:pointer;"
             >
