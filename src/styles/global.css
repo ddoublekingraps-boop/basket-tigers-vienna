@@ -225,7 +225,11 @@ h1,h2,h3{font-family:var(--font-head); font-weight:700; line-height:1.02; margin
 /* ---------- Marquee ---------- */
 .marquee{overflow:hidden; border-block:1px solid var(--line); background:rgba(255,122,24,.06); padding:14px 0}
 .marquee-track{display:flex; gap:0; width:max-content; animation:marquee 26s linear infinite; will-change:transform}
-.marquee span{font-family:var(--font-head); text-transform:uppercase; font-weight:700; font-size:clamp(18px,2.4vw,26px); letter-spacing:2px; color:transparent; -webkit-text-stroke:1px rgba(255,255,255,.32); padding:0 28px}
+/* Konturstaerke der Schrift bestimmt hier den Kontrast (color ist transparent).
+   .48 Weiss ergibt 4.98:1 gegen den Marquee-Hintergrund -> WCAG AA fuer
+   normalen Text, auch bei 18px auf Mobil. Bewusst knapp ueber der Schwelle,
+   damit das Band dezent bleibt. */
+.marquee span{font-family:var(--font-head); text-transform:uppercase; font-weight:700; font-size:clamp(18px,2.4vw,26px); letter-spacing:2px; color:transparent; -webkit-text-stroke:1px rgba(255,255,255,.48); padding:0 28px}
 .marquee span.fill{color:var(--orange); -webkit-text-stroke:0}
 @keyframes marquee{from{transform:translateX(0)} to{transform:translateX(var(--marquee-amt,-50%))}}
 
@@ -617,7 +621,9 @@ h1,h2,h3{font-family:var(--font-head); font-weight:700; line-height:1.02; margin
 .site-footer{margin-top:64px; border-top:3px solid transparent; border-image:linear-gradient(90deg,var(--orange),var(--orange-2),transparent) 1; background:linear-gradient(180deg, rgba(255,122,24,.05), transparent 40%)}
 .footer-main{display:grid; grid-template-columns:1.4fr 1fr 1fr; gap:30px; padding:44px 0 30px}
 .footer-brand{display:flex; flex-direction:column; gap:16px; max-width:36ch}
-.footer-col h4{font-family:var(--font-head); text-transform:uppercase; letter-spacing:1.5px; font-size:13px; color:var(--muted); margin:0 0 14px}
+/* Kein <h4> mehr (uebersprungene Heading-Ebene) -- font-weight:700 ersetzt den
+   UA-Default von h4, damit die Darstellung unveraendert bleibt. */
+.footer-col .footer-col-title{font-family:var(--font-head); text-transform:uppercase; letter-spacing:1.5px; font-size:13px; font-weight:700; color:var(--muted); margin:0 0 14px}
 .footer-col a{display:block; padding:6px 0; color:var(--text); font-size:15px; transition:color .15s ease}
 .footer-col a:hover{color:var(--orange)}
 .footer-bottom{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; padding:18px 0 30px; border-top:1px solid var(--line); color:var(--muted); font-size:13px}
