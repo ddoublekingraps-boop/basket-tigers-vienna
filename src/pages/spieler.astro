@@ -41,6 +41,21 @@ const teamData = teams.map(team => {
     players,
   };
 });
+
+/**
+ * Gibt eine optimierte Bild-URL zurück.
+ * In Produktion (Netlify) werden CMS-Uploads über die Netlify Image CDN
+ * als WebP in der tatsächlich benötigten Größe ausgeliefert (96 × 96 px = 2× Retina).
+ * Im Dev-Modus wird die Original-URL direkt verwendet.
+ */
+function playerPhotoUrl(photo: string | undefined): string {
+  if (!photo) return "/assets/default-player.svg";
+  // Netlify Image CDN: WebP, 96×96 (2× des 48px CSS-Anzeigemaßes)
+  if (import.meta.env.PROD) {
+    return `/.netlify/images?url=${encodeURIComponent(photo)}&w=96&h=96&fit=cover&fm=webp&q=80`;
+  }
+  return photo;
+}
 ---
 <Base>
   <section class="page-header">
@@ -101,12 +116,13 @@ const teamData = teams.map(team => {
                 {players.map(p => (
                   <article class="player-card">
                     <img
-                      src={p.data.photo || "/assets/default-player.svg"}
+                      src={playerPhotoUrl(p.data.photo)}
                       alt={p.data.name}
                       class="player-avatar"
-                      width="48"
-                      height="48"
+                      width="96"
+                      height="96"
                       loading="lazy"
+                      decoding="async"
                     />
                     <div class="player-meta">
                       <div class="player-name">{p.data.name}</div>

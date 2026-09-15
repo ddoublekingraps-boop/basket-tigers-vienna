@@ -2,6 +2,8 @@
 import Base from "../layouts/Base.astro";
 import Socials from "../components/Socials.astro";
 import { getCollection } from "astro:content";
+import { Image } from "astro:assets";
+import logoImg from "../assets/logo.png";
 
 const allGames = await getCollection("games");
 const teams = await getCollection("teams");
@@ -63,7 +65,18 @@ const teaser = (s, n=110) => { const t = plain(s); return t.length > n ? t.slice
         </div>
       </div>
       <div class="hero-art">
-        <img class="hero-logo" src="/assets/logo.png" alt="Basket Tigers Vienna Logo" />
+        <!-- LCP-Bild: Astro Image erzeugt WebP, kein lazy loading, fetchpriority=high -->
+        <Image
+          src={logoImg}
+          alt="Basket Tigers Vienna Logo"
+          class="hero-logo"
+          width={840}
+          height={840}
+          quality={85}
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+        />
       </div>
     </div>
   </section>
@@ -210,7 +223,15 @@ const teaser = (s, n=110) => { const t = plain(s); return t.length > n ? t.slice
         <div class="grid3">
           {sponsoren.slice(0,3).map(s => (
             <a class="card card-hover sponsor-card" href={s.data.url ?? "/sponsoren/"} target={s.data.url ? "_blank" : undefined} rel={s.data.url ? "noopener noreferrer" : undefined}>
-              <img class="sponsor-logo" src={s.data.logo} alt={s.data.name} />
+              <img
+                class="sponsor-logo"
+                src={s.data.logo}
+                alt={s.data.name}
+                width="400"
+                height="200"
+                loading="lazy"
+                decoding="async"
+              />
               <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
                 <span style="font-family:var(--font-head); text-transform:uppercase; letter-spacing:.5px;">{s.data.name}</span>
               </div>
