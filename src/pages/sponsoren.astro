@@ -2,19 +2,9 @@
 import Base from "../layouts/Base.astro";
 import { getCollection } from "astro:content";
 
-const sponsoren = await getCollection("sponsoren");
+import { sponsorLogoSize, sponsorLogoUrl } from "../lib/images";
 
-/**
- * Gibt eine optimierte Logo-URL zurück.
- * Netlify Image CDN liefert in Produktion WebP in der richtigen Größe aus.
- * Sponsor-Logos werden maximal 600 × 200 px angezeigt (volle Kartenbreite).
- */
-function sponsorLogoUrl(logo: string): string {
-  if (import.meta.env.PROD) {
-    return `/.netlify/images?url=${encodeURIComponent(logo)}&w=600&fm=webp&q=85`;
-  }
-  return logo;
-}
+const sponsoren = await getCollection("sponsoren");
 ---
 <Base>
   <section class="page-header">
@@ -33,12 +23,16 @@ function sponsorLogoUrl(logo: string): string {
         <div class="card pad"><p class="p">Bald stellen wir hier unsere Partner vor.</p></div>
       ) : (
         <div class="grid3">
-          {sponsoren.map(s => (
+          {sponsoren.map(s => {
+            const logoSize = sponsorLogoSize(s.data.logo);
+            return (
             <article class="card card-hover sponsor-card">
               <img
                 class="sponsor-logo"
                 src={sponsorLogoUrl(s.data.logo)}
                 alt={s.data.name}
+                width={logoSize?.width}
+                height={logoSize?.height}
                 loading="lazy"
                 decoding="async"
               />
@@ -48,7 +42,8 @@ function sponsorLogoUrl(logo: string): string {
               {s.body ? <div class="p" style="white-space:pre-wrap;">{s.body}</div> : null}
               {s.data.url ? <a class="btn2 btn-sm" href={s.data.url} target="_blank" rel="noopener noreferrer">Website →</a> : null}
             </article>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

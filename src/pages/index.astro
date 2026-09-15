@@ -2,6 +2,11 @@
 import Base from "../layouts/Base.astro";
 import Socials from "../components/Socials.astro";
 import { getCollection } from "astro:content";
+import { getImageSize, sponsorLogoSize, sponsorLogoUrl } from "../lib/images";
+
+// Echte Pixelmasse des Hero-Logos -> width/height-Attribute ohne erfundenes Ratio
+const heroLogo = "/assets/logo.png";
+const heroLogoSize = getImageSize(heroLogo);
 
 const allGames = await getCollection("games");
 const teams = await getCollection("teams");
@@ -63,10 +68,13 @@ const teaser = (s, n=110) => { const t = plain(s); return t.length > n ? t.slice
         </div>
       </div>
       <div class="hero-art">
+        <!-- LCP-Bild: width/height = echte Bildmasse (CLS), Anzeigegroesse via CSS max-width -->
         <img
-          src="/assets/logo.png"
+          src={heroLogo}
           alt="Basket Tigers Vienna Logo"
           class="hero-logo"
+          width={heroLogoSize?.width}
+          height={heroLogoSize?.height}
           loading="eager"
           fetchpriority="high"
           decoding="async"
@@ -215,12 +223,16 @@ const teaser = (s, n=110) => { const t = plain(s); return t.length > n ? t.slice
           <a class="section-link" href="/sponsoren/">Alle Sponsoren →</a>
         </div>
         <div class="grid3">
-          {sponsoren.slice(0,3).map(s => (
+          {sponsoren.slice(0,3).map(s => {
+            const logoSize = sponsorLogoSize(s.data.logo);
+            return (
             <a class="card card-hover sponsor-card" href={s.data.url ?? "/sponsoren/"} target={s.data.url ? "_blank" : undefined} rel={s.data.url ? "noopener noreferrer" : undefined}>
               <img
                 class="sponsor-logo"
-                src={s.data.logo}
+                src={sponsorLogoUrl(s.data.logo)}
                 alt={s.data.name}
+                width={logoSize?.width}
+                height={logoSize?.height}
                 loading="lazy"
                 decoding="async"
               />
@@ -228,7 +240,8 @@ const teaser = (s, n=110) => { const t = plain(s); return t.length > n ? t.slice
                 <span style="font-family:var(--font-head); text-transform:uppercase; letter-spacing:.5px;">{s.data.name}</span>
               </div>
             </a>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

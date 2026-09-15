@@ -212,12 +212,14 @@ h1,h2,h3{font-family:var(--font-head); font-weight:700; line-height:1.02; margin
 
 .hero-art{position:relative; display:flex; align-items:center; justify-content:center}
 .hero-art::before{content:""; position:absolute; inset:-6% ; border-radius:50%; background:radial-gradient(circle at 50% 45%, var(--glow), transparent 62%); filter:blur(8px); z-index:0}
-.hero-logo{position:relative; z-index:1; width:min(420px,86%); border-radius:28px; border:1px solid var(--line-strong); box-shadow:var(--shadow)}
+/* Anzeigegroesse nur ueber max-width -- width/height bleiben auto, damit das
+   Original-Seitenverhaeltnis aus den img-Attributen erhalten bleibt. */
+.hero-logo{position:relative; z-index:1; width:auto; height:auto; max-width:min(420px,86%); border-radius:28px; border:1px solid var(--line-strong); box-shadow:var(--shadow)}
 @media (max-width:900px){
   .hero{padding:40px 0 24px}
   .hero-grid{grid-template-columns:1fr; gap:30px}
   .hero-art{order:-1}
-  .hero-logo{width:min(320px,72%)}
+  .hero-logo{max-width:min(320px,72%)}
 }
 
 /* ---------- Marquee ---------- */
@@ -434,9 +436,11 @@ h1,h2,h3{font-family:var(--font-head); font-weight:700; line-height:1.02; margin
   display:block;
   width:100%;
   height:auto;
-  /* Feste Aspect-Ratio verhindert CLS beim Laden; object-fit:contain passt jedes Logo-Format ein */
-  aspect-ratio:1 / 1;
-  object-fit:contain;
+  /* Kein aspect-ratio: die width/height-Attribute am <img> liefern das echte
+     Seitenverhaeltnis. Der Browser reserviert den Platz daraus (kein CLS),
+     ohne dass ein Logo gestaucht oder unnoetig verkleinert wird. */
+  max-height:340px;           /* Deckel fuer sehr hohe Logos */
+  object-fit:contain;         /* greift nur, wenn der Deckel zieht - ohne Verzerrung */
   /* Kein Innenabstand: Logos fuellen den Rahmen randlos aus */
   padding:0;
   background:rgba(0,0,0,.25);
