@@ -11,7 +11,7 @@ const sponsoren = await getCollection("sponsoren");
  */
 function sponsorLogoUrl(logo: string): string {
   if (import.meta.env.PROD) {
-    return `/.netlify/images?url=${encodeURIComponent(logo)}&w=600&h=200&fit=contain&fm=webp&q=85`;
+    return `/.netlify/images?url=${encodeURIComponent(logo)}&w=600&fm=webp&q=85`;
   }
   return logo;
 }
@@ -39,8 +39,6 @@ function sponsorLogoUrl(logo: string): string {
                 class="sponsor-logo"
                 src={sponsorLogoUrl(s.data.logo)}
                 alt={s.data.name}
-                width="600"
-                height="200"
                 loading="lazy"
                 decoding="async"
               />
