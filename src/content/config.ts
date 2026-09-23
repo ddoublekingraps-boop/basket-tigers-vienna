@@ -35,6 +35,8 @@ const games = defineCollection({
     date: z.any().optional(),
     // Eigene Mannschaft, z.B. "Tigers H1" (leer -> "Tigers")
     team: z.string().nullish(),
+    // Heim- oder Auswaertsspiel (leer -> Heim)
+    venue: z.string().nullish(),
     opponent: z.string(),
     location: z.string().nullish(),
   }).transform((g) => {
@@ -43,6 +45,7 @@ const games = defineCollection({
     return {
       opponent: g.opponent.trim(),
       team: g.team?.trim() || DEFAULT_TEAM,
+      isHome: !/^ausw/i.test((g.venue ?? '').trim()),
       location: (g.location ?? '').trim(),
       date,                                   // echtes Date oder null (= TBD)
       hasTime,                                // false -> Uhrzeit TBD
