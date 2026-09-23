@@ -265,6 +265,8 @@ h1,h2,h3{font-family:var(--font-head); font-weight:700; line-height:1.02; margin
 .gc-btn{width:34px; height:34px; border-radius:50%; display:grid; place-items:center; background:transparent; color:#fff; border:1px solid var(--line-strong); font-size:20px; line-height:1; cursor:pointer; transition:border-color .18s ease, color .18s ease}
 .gc-btn:hover,.gc-btn:focus-visible{border-color:var(--orange); color:var(--orange); outline:none}
 .gc-count{font-family:var(--font-head); letter-spacing:1.5px; font-size:14px; color:var(--muted); min-width:3.2em; text-align:center}
+.map-link{color:inherit; text-decoration:underline; text-decoration-color:rgba(255,122,24,.45); text-underline-offset:3px; transition:color .18s ease}
+.map-link:hover,.map-link:focus-visible{color:var(--orange); text-decoration-color:var(--orange)}
 @media (max-width:540px){
   .vs-body{padding:22px 14px; gap:8px}
   .vs-mid{font-size:18px}

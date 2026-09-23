@@ -1,9 +1,10 @@
 ---
 import Base from "../layouts/Base.astro";
 import Socials from "../components/Socials.astro";
+import MapsLinks from "../components/MapsLinks.astro";
 import { getCollection } from "astro:content";
 import { getImageSize, sponsorLogoSize, sponsorLogoUrl } from "../lib/images";
-import { fmtDay, fmtTime } from "../lib/games";
+import { fmtDay, fmtTime, mapsUrl, mapsQuery } from "../lib/games";
 
 // Echte Pixelmasse des Hero-Logos -> width/height-Attribute ohne erfundenes Ratio
 const heroLogo = "/assets/logo.png";
@@ -185,7 +186,7 @@ const teaser = (s, n=110) => { const t = plain(s); return t.length > n ? t.slice
                   </div>
                   <div class="vs-foot">
                     <span class="p">
-                      {g.data.location && <>📍 {g.data.location} · </>}<span style="white-space:nowrap;">{d && g.data.hasTime ? fmtTime(d) + ' Uhr' : 'Uhrzeit: TBD'}</span>
+                      {g.data.location && <><a class="map-link" href={mapsUrl(g.data.location)} data-maps-q={mapsQuery(g.data.location)} target="_blank" rel="noopener noreferrer" aria-label={'Route zu ' + g.data.location + ' in Karten öffnen'}>📍 {g.data.location}</a> · </>}<span style="white-space:nowrap;">{d && g.data.hasTime ? fmtTime(d) + ' Uhr' : 'Uhrzeit: TBD'}</span>
                     </span>
                     <a class="btn2 btn-sm" href="/spielzeiten/">Alle Spiele</a>
                   </div>
@@ -348,4 +349,5 @@ const teaser = (s, n=110) => { const t = plain(s); return t.length > n ? t.slice
     </div>
   </section>
 
+  <MapsLinks />
 </Base>

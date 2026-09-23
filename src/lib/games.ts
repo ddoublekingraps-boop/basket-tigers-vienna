@@ -90,3 +90,11 @@ export const fmtDate = (d: Date) =>
 
 export const fmtTime = (d: Date) =>
   d.toLocaleTimeString('de-AT', { timeZone: TZ, hour: '2-digit', minute: '2-digit' });
+
+/** Suchbegriff fuer Karten-Apps: ergaenzt "Wien", falls in der Adresse keine Stadt steht. */
+export const mapsQuery = (location: string) =>
+  /wien|vienna|österreich|austria/i.test(location) ? location : `${location}, Wien`;
+
+/** Link zu Google Maps (funktioniert ueberall; auf iPhones tauscht ein Script auf Apple Karten). */
+export const mapsUrl = (location: string) =>
+  'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(mapsQuery(location));

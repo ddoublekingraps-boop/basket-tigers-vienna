@@ -1,0 +1,13 @@
+---
+// Auf iPhone/iPad: Adress-Links (.map-link) in Apple Karten statt Google Maps oeffnen.
+---
+<script>
+  const ua = navigator.userAgent;
+  // iPhone/iPod oder iPad (iPadOS meldet sich als "Macintosh" mit Touchscreen)
+  const isApple = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+  if (isApple) {
+    document.querySelectorAll<HTMLAnchorElement>('a.map-link[data-maps-q]').forEach((a) => {
+      a.href = 'https://maps.apple.com/?q=' + encodeURIComponent(a.dataset.mapsQ || '');
+    });
+  }
+</script>

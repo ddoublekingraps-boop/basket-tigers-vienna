@@ -1,8 +1,9 @@
 ---
 import Base from "../layouts/Base.astro";
+import MapsLinks from "../components/MapsLinks.astro";
 import { getCollection } from "astro:content";
 
-import { fmtDate, fmtTime } from "../lib/games";
+import { fmtDate, fmtTime, mapsUrl, mapsQuery } from "../lib/games";
 
 const now = Date.now();
 const allGames = await getCollection("games");
@@ -45,7 +46,7 @@ const games = allGames.sort((a,b) => timeOf(a) - timeOf(b));
                       <td style="white-space:nowrap; font-weight:600;">{formattedDate}</td>
                       <td class="text-orange" style="font-family:var(--font-head); text-transform:uppercase; letter-spacing:.5px; white-space:nowrap;">{g.data.team}</td>
                       <td style="font-family:var(--font-head); text-transform:uppercase; letter-spacing:.5px;">{g.data.opponent}</td>
-                      <td class="p">{g.data.location}</td>
+                      <td class="p">{g.data.location && <a class="map-link" href={mapsUrl(g.data.location)} data-maps-q={mapsQuery(g.data.location)} target="_blank" rel="noopener noreferrer" aria-label={'Route zu ' + g.data.location + ' in Karten öffnen'}>📍 {g.data.location}</a>}</td>
                       <td style="white-space:nowrap;">{g.data.isHome ? 'Heim' : 'Auswärts'}</td>
                       <td>{isUpcoming ? <span class="badge gold">Upcoming</span> : <span class="badge">Vorbei</span>}</td>
                     </tr>
@@ -58,4 +59,5 @@ const games = allGames.sort((a,b) => timeOf(a) - timeOf(b));
       )}
     </div>
   </section>
+  <MapsLinks />
 </Base>
