@@ -1,4 +1,5 @@
 import { defineCollection, z } from 'astro:content';
+import { parseGameDate, DEFAULT_TEAM } from '../lib/games';
 
 const news = defineCollection({
   type: 'content',
@@ -30,22 +31,23 @@ const teams = defineCollection({
 const games = defineCollection({
   type: 'content',
   schema: z.object({
-    date: z.preprocess((val) => {
-      if (val === undefined || val === null || val === '') return 'TBD';
-      if (val instanceof Date) {
-        return isNaN(val.getTime()) ? 'TBD' : val;
-      }
-      if (typeof val === 'string') {
-        const trimmed = val.trim();
-        if (!trimmed || trimmed.toUpperCase() === 'TBD') return 'TBD';
-        const parsed = new Date(trimmed);
-        if (!isNaN(parsed.getTime())) return parsed;
-        return trimmed;
-      }
-      return val;
-    }, z.union([z.date(), z.string()]).optional().default('TBD')),
+    // Datum als Text aus dem Admin-Panel, z.B. "26.09.2026 20:00" (oder leer / TBD)
+    date: z.any().optional(),
+    // Eigene Mannschaft, z.B. "Tigers H1" (leer -> "Tigers")
+    team: z.string().nullish(),
     opponent: z.string(),
-    location: z.string(),
+    location: z.string().nullish(),
+  }).transform((g) => {
+    const { date, hasTime } = parseGameDate(g.date);
+    const raw = typeof g.date === 'string' ? g.date.trim() : '';
+    return {
+      opponent: g.opponent.trim(),
+      team: g.team?.trim() || DEFAULT_TEAM,
+      location: (g.location ?? '').trim(),
+      date,                                   // echtes Date oder null (= TBD)
+      hasTime,                                // false -> Uhrzeit TBD
+      dateText: date ? '' : (raw && !/^tbd$/i.test(raw) ? raw : 'TBD'), // Anzeige-Text wenn kein Datum erkannt
+    };
   }),
 });
 

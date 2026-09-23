@@ -3,6 +3,7 @@ import Base from "../layouts/Base.astro";
 import Socials from "../components/Socials.astro";
 import { getCollection } from "astro:content";
 import { getImageSize, sponsorLogoSize, sponsorLogoUrl } from "../lib/images";
+import { fmtDay, fmtTime } from "../lib/games";
 
 // Echte Pixelmasse des Hero-Logos -> width/height-Attribute ohne erfundenes Ratio
 const heroLogo = "/assets/logo.png";
@@ -13,16 +14,18 @@ const teams = await getCollection("teams");
 const allNews = (await getCollection("news")).sort((a,b)=> b.data.date.getTime()-a.data.date.getTime());
 const sponsoren = await getCollection("sponsoren");
 
-const isRealDate = (d: unknown): d is Date => d instanceof Date && !isNaN(d.getTime());
-
-const nextGame =
-  allGames.filter(g => isRealDate(g.data.date) ? g.data.date.getTime() >= Date.now() - 1000*60*60*6 : true)
-          .sort((a,b) => {
-            const timeA = isRealDate(a.data.date) ? a.data.date.getTime() : Infinity;
-            const timeB = isRealDate(b.data.date) ? b.data.date.getTime() : Infinity;
-            return timeA - timeB;
-          })[0]
-  ?? allGames[0];
+// ----- Spiele fuer die Startseite -----
+// Gerendert werden alle kommenden Spiele; welche davon sichtbar sind (nur die naechsten
+// 7 Tage) entscheidet ein kleines Script im Browser. So stimmt die Auswahl auch dann,
+// wenn die Seite schon ein paar Tage nicht neu gebaut wurde.
+const RUNNING_MS = 1000*60*60*3; // ein Spiel gilt ab Tip-Off noch 3h als "aktuell"
+const buildNow = Date.now();
+const datedUpcoming = allGames
+  .filter(g => g.data.date && g.data.date.getTime() >= buildNow - RUNNING_MS)
+  .sort((a,b) => a.data.date!.getTime() - b.data.date!.getTime());
+const tbdGames = allGames.filter(g => !g.data.date);
+// Termine ohne Datum nur als Notloesung, wenn kein Spiel mit Datum ansteht
+const homeGames = (datedUpcoming.length ? datedUpcoming : tbdGames.slice(0,1)).slice(0, 40);
 
 const latestNews = allNews.slice(0, 3);
 
@@ -153,39 +156,121 @@ const teaser = (s, n=110) => { const t = plain(s); return t.length > n ? t.slice
   <!-- ===== NEXT GAME + NEWS ===== -->
   <section class="section-tight">
     <div class="container grid2" style="align-items:start;">
-      <!-- Next game -->
-      <div>
-        <div class="section-head"><span class="kicker eyebrow">Tip-Off</span></div>
+      <!-- Next games (Karussell: nur Spiele der naechsten 7 Tage) -->
+      <div class="games-home" data-games-home>
+        <div class="section-head">
+          <span class="kicker eyebrow">Tip-Off</span>
+          <div class="gc-nav" data-gc-nav hidden>
+            <button type="button" class="gc-btn" data-gc-prev aria-label="Vorheriges Spiel">‹</button>
+            <span class="gc-count" data-gc-count aria-live="polite">1 / 1</span>
+            <button type="button" class="gc-btn" data-gc-next aria-label="Nächstes Spiel">›</button>
+          </div>
+        </div>
         <div class="card vs-card">
-          {nextGame ? (
-            <>
-              <div class="vs-top">
-                <span class="badge gold">Nächstes Spiel</span>
-                <span class="kicker" style="letter-spacing:1.5px;">
-                  {isRealDate(nextGame.data.date)
-                    ? nextGame.data.date.toLocaleDateString('de-AT',{timeZone:'Europe/Vienna', weekday:'short', day:'2-digit', month:'short'})
-                    : (nextGame.data.date || 'TBD')}
-                </span>
-              </div>
-              <div class="vs-body">
-                <div class="vs-team"><div class="name text-orange">Tigers</div><div class="sub">Heim</div></div>
-                <div class="vs-mid">VS</div>
-                <div class="vs-team"><div class="name">{nextGame.data.opponent}</div><div class="sub">Gegner</div></div>
-              </div>
-              <div class="vs-foot">
-                <span class="p">
-                  📍 {nextGame.data.location} · {isRealDate(nextGame.data.date)
-                    ? nextGame.data.date.toLocaleTimeString('de-AT',{timeZone:'Europe/Vienna', hour:'2-digit',minute:'2-digit'}) + ' Uhr'
-                    : 'Uhrzeit: TBD'}
-                </span>
-                <a class="btn2 btn-sm" href="/spielzeiten/">Alle Spiele</a>
-              </div>
-            </>
-          ) : (
-            <div class="pad"><p class="p">Noch keine Spiele eingetragen. <a class="text-orange" href="/spielzeiten/">Zu den Spielzeiten →</a></p></div>
-          )}
+          <div class="gc-track" data-gc-track tabindex="0" aria-label="Kommende Spiele">
+            {homeGames.map((g, i) => {
+              const d = g.data.date;
+              return (
+                <article class="gc-slide" data-start={d ? String(d.getTime()) : ''} aria-roledescription="Spiel">
+                  <div class="vs-top">
+                    <span class="badge gold" data-gc-badge>{i === 0 ? 'Nächstes Spiel' : 'Diese Woche'}</span>
+                    <span class="kicker" style="letter-spacing:1.5px;">
+                      {d ? fmtDay(d) + (g.data.hasTime ? ' · ' + fmtTime(d) : '') : g.data.dateText}
+                    </span>
+                  </div>
+                  <div class="vs-body">
+                    <div class="vs-team"><div class="name text-orange">{g.data.team}</div><div class="sub">Heim</div></div>
+                    <div class="vs-mid">VS</div>
+                    <div class="vs-team"><div class="name">{g.data.opponent}</div><div class="sub">Gegner</div></div>
+                  </div>
+                  <div class="vs-foot">
+                    <span class="p">
+                      {g.data.location && <>📍 {g.data.location} · </>}<span style="white-space:nowrap;">{d && g.data.hasTime ? fmtTime(d) + ' Uhr' : 'Uhrzeit: TBD'}</span>
+                    </span>
+                    <a class="btn2 btn-sm" href="/spielzeiten/">Alle Spiele</a>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+          <div class="pad" data-gc-empty hidden={homeGames.length > 0}>
+            <p class="p">Aktuell keine Spiele eingetragen. <a class="text-orange" href="/spielzeiten/">Zu den Spielzeiten →</a></p>
+          </div>
         </div>
       </div>
+      <script>
+        (function () {
+          const root = document.querySelector('[data-games-home]');
+          if (!root) return;
+          const track = root.querySelector('[data-gc-track]') as HTMLElement;
+          const nav = root.querySelector('[data-gc-nav]') as HTMLElement;
+          const count = root.querySelector('[data-gc-count]') as HTMLElement;
+          const empty = root.querySelector('[data-gc-empty]') as HTMLElement;
+          const all = Array.from(track.querySelectorAll<HTMLElement>('.gc-slide'));
+
+          // --- Filter: nur Spiele in den naechsten 7 Tagen ---
+          const now = Date.now();
+          const RUNNING = 3 * 60 * 60 * 1000;
+          const WEEK = 7 * 24 * 60 * 60 * 1000;
+          const start = (el: HTMLElement) => el.dataset.start ? Number(el.dataset.start) : NaN;
+          const upcoming = all.filter(el => !isNaN(start(el)) && start(el) >= now - RUNNING);
+          let show = upcoming.filter(el => start(el) <= now + WEEK);
+          // Nichts in dieser Woche -> trotzdem das naechste Spiel zeigen (bzw. TBD-Termin)
+          if (!show.length) show = upcoming.slice(0, 1);
+          if (!show.length) show = all.filter(el => !el.dataset.start).slice(0, 1);
+          all.forEach(el => { if (!show.includes(el)) el.remove(); });
+
+          if (!show.length) { empty.hidden = false; return; }
+          show.forEach((el, i) => {
+            const b = el.querySelector('[data-gc-badge]');
+            if (b) b.textContent = i === 0 ? 'Nächstes Spiel' : 'Diese Woche';
+            el.setAttribute('aria-label', 'Spiel ' + (i + 1) + ' von ' + show.length);
+          });
+          if (show.length < 2) return;
+
+          // --- Karussell ---
+          nav.hidden = false;
+          let idx = 0;
+          const update = () => { count.textContent = (idx + 1) + ' / ' + show.length; };
+          const go = (i: number, smooth = true) => {
+            idx = (i + show.length) % show.length;
+            track.scrollTo({ left: show[idx].offsetLeft, behavior: smooth ? 'smooth' : 'auto' });
+            update();
+          };
+          update();
+
+          // Wischen / Scrollen mit dem Finger -> Zaehler mitziehen
+          let raf = 0;
+          track.addEventListener('scroll', () => {
+            cancelAnimationFrame(raf);
+            raf = requestAnimationFrame(() => {
+              const i = Math.round(track.scrollLeft / track.clientWidth);
+              if (i !== idx && i >= 0 && i < show.length) { idx = i; update(); }
+            });
+          }, { passive: true });
+
+          // Automatisch weiterblaettern (pausiert bei Hover/Fokus, stoppt nach Klick)
+          const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          let paused = false, stopped = reduce;
+          const timer = window.setInterval(() => {
+            if (!stopped && !paused && !document.hidden) go(idx + 1);
+          }, 6000);
+          const stop = () => { stopped = true; window.clearInterval(timer); };
+          root.addEventListener('mouseenter', () => { paused = true; });
+          root.addEventListener('mouseleave', () => { paused = false; });
+          root.addEventListener('focusin', () => { paused = true; });
+          root.addEventListener('focusout', () => { paused = false; });
+          track.addEventListener('touchstart', stop, { passive: true });
+
+          root.querySelector('[data-gc-prev]')!.addEventListener('click', () => { stop(); go(idx - 1); });
+          root.querySelector('[data-gc-next]')!.addEventListener('click', () => { stop(); go(idx + 1); });
+          track.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') { stop(); go(idx + 1); e.preventDefault(); }
+            if (e.key === 'ArrowLeft') { stop(); go(idx - 1); e.preventDefault(); }
+          });
+          window.addEventListener('resize', () => go(idx, false));
+        })();
+      </script>
 
       <!-- News -->
       <div>

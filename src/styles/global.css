@@ -254,6 +254,17 @@ h1,h2,h3{font-family:var(--font-head); font-weight:700; line-height:1.02; margin
 .vs-mid{font-family:var(--font-head); font-size:24px; color:var(--orange); font-weight:700}
 .vs-foot{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; padding:16px 22px; border-top:1px solid var(--line)}
 .vs-foot .p{min-width:0}
+/* Spiele-Karussell auf der Startseite */
+.gc-track{display:flex; overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:none; -webkit-overflow-scrolling:touch; outline:none}
+.gc-track::-webkit-scrollbar{display:none}
+.gc-track:focus-visible{box-shadow:inset 0 0 0 2px var(--orange)}
+.gc-slide{flex:0 0 100%; min-width:0; scroll-snap-align:start; display:flex; flex-direction:column}
+.gc-slide .vs-body{flex:1}
+.gc-nav{display:flex; align-items:center; gap:10px; margin:-8px 0}
+.gc-nav[hidden]{display:none}
+.gc-btn{width:34px; height:34px; border-radius:50%; display:grid; place-items:center; background:transparent; color:#fff; border:1px solid var(--line-strong); font-size:20px; line-height:1; cursor:pointer; transition:border-color .18s ease, color .18s ease}
+.gc-btn:hover,.gc-btn:focus-visible{border-color:var(--orange); color:var(--orange); outline:none}
+.gc-count{font-family:var(--font-head); letter-spacing:1.5px; font-size:14px; color:var(--muted); min-width:3.2em; text-align:center}
 @media (max-width:540px){
   .vs-body{padding:22px 14px; gap:8px}
   .vs-mid{font-size:18px}

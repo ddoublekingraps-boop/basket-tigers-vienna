@@ -50,9 +50,13 @@ collections:
     label_singular: "Game"
     folder: "src/content/games"
     create: true
-    slug: "{{slug}}"
+    identifier_field: "opponent"
+    slug: "{{fields.date}}-{{fields.team}}-{{fields.opponent}}"
+    summary: "{{date}} · {{team}} vs {{opponent}}"
     fields:
-      - { label: "Datum", name: "date", widget: "string", required: false, default: "TBD", hint: "Datum & Uhrzeit (z.B. 2026-09-20T18:30:00+02:00) oder TBD wenn noch nicht bekannt" }
+      - { label: "Unser Team", name: "team", widget: "select", options: ["Tigers H1", "Tigers H2", "Tigers H3", "Tigers U19"], required: false, hint: "Welche Mannschaft von uns spielt? Leer lassen = nur 'Tigers'" }
+      - { label: "Datum & Uhrzeit", name: "date", widget: "string", required: false, default: "TBD", hint: "Format: TT.MM.JJJJ HH:MM, z.B. 26.09.2026 20:00 · Nur Datum (26.09.2026) = Uhrzeit TBD · TBD = Termin noch offen" }
+      - { label: "Heim / Auswärts", name: "venue", widget: "select", options: ["Heim", "Auswärts"], default: "Heim", required: false }
       - { label: "Gegner", name: "opponent", widget: "string" }
       - { label: "Ort", name: "location", widget: "string" }
       - { label: "Event-Info", name: "body", widget: "markdown", required: false }
