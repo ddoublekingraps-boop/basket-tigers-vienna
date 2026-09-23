@@ -250,24 +250,45 @@ const teaser = (s, n=110) => { const t = plain(s); return t.length > n ? t.slice
             });
           }, { passive: true });
 
-          // Automatisch weiterblaettern (pausiert bei Hover/Fokus, stoppt nach Klick)
+          // Automatisch weiterblaettern alle 6s.
+          // - pausiert nur, solange eine echte Maus drueber ist oder per Tastatur fokussiert wurde
+          // - nach Beruehren/Wischen/Pfeil-Klick geht es nach einer kurzen Pause (10s) weiter
+          // - laeuft nur, wenn das Karussell im sichtbaren Bereich ist
+          // - bei "Bewegung reduzieren" wird ohne Animation gewechselt
           const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-          let paused = false, stopped = reduce;
-          const timer = window.setInterval(() => {
-            if (!stopped && !paused && !document.hidden) go(idx + 1);
-          }, 6000);
-          const stop = () => { stopped = true; window.clearInterval(timer); };
-          root.addEventListener('mouseenter', () => { paused = true; });
-          root.addEventListener('mouseleave', () => { paused = false; });
-          root.addEventListener('focusin', () => { paused = true; });
-          root.addEventListener('focusout', () => { paused = false; });
-          track.addEventListener('touchstart', stop, { passive: true });
+          const INTERVAL = 6000, RESUME_AFTER = 10000;
+          let hover = false, kbdFocus = false, visible = true, holdUntil = 0;
+          let last = Date.now();
+          const hold = () => { holdUntil = Date.now() + RESUME_AFTER; last = Date.now(); };
+          window.setInterval(() => {
+            const t = Date.now();
+            if (hover || kbdFocus || !visible || document.hidden || t < holdUntil) { last = t; return; }
+            if (t - last >= INTERVAL) { last = t; go(idx + 1, !reduce); }
+          }, 250);
 
-          root.querySelector('[data-gc-prev]')!.addEventListener('click', () => { stop(); go(idx - 1); });
-          root.querySelector('[data-gc-next]')!.addEventListener('click', () => { stop(); go(idx + 1); });
+          root.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') hover = true; });
+          root.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse') { hover = false; last = Date.now(); } });
+          root.addEventListener('focusin', (e) => {
+            const el = e.target as HTMLElement;
+            kbdFocus = !!el.matches && el.matches(':focus-visible');
+          });
+          root.addEventListener('focusout', () => { kbdFocus = false; });
+          track.addEventListener('touchstart', hold, { passive: true });
+          track.addEventListener('touchend', hold, { passive: true });
+
+          if ('IntersectionObserver' in window) {
+            new IntersectionObserver((entries) => {
+              const v = entries[0].isIntersecting;
+              if (v && !visible) last = Date.now(); // beim Hinscrollen erst volle 6s zeigen
+              visible = v;
+            }, { threshold: 0.5 }).observe(track);
+          }
+
+          root.querySelector('[data-gc-prev]')!.addEventListener('click', () => { hold(); go(idx - 1); });
+          root.querySelector('[data-gc-next]')!.addEventListener('click', () => { hold(); go(idx + 1); });
           track.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowRight') { stop(); go(idx + 1); e.preventDefault(); }
-            if (e.key === 'ArrowLeft') { stop(); go(idx - 1); e.preventDefault(); }
+            if (e.key === 'ArrowRight') { hold(); go(idx + 1); e.preventDefault(); }
+            if (e.key === 'ArrowLeft') { hold(); go(idx - 1); e.preventDefault(); }
           });
           window.addEventListener('resize', () => go(idx, false));
         })();
