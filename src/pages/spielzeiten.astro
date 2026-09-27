@@ -3,14 +3,33 @@ import Base from "../layouts/Base.astro";
 import MapsLinks from "../components/MapsLinks.astro";
 import { getCollection } from "astro:content";
 
-import { fmtDate, fmtTime, mapsUrl, mapsQuery } from "../lib/games";
+import { fmtDate, fmtTime, mapsUrl, mapsQuery, RESULT_LABEL, RESULT_CLASS } from "../lib/games";
 
 const now = Date.now();
+const RUNNING_MS = 1000*60*60*3; // ab Tip-Off gilt ein Spiel noch 3h als "laufend"
 const allGames = await getCollection("games");
+type Game = (typeof allGames)[number];
 
-// Sortierung nach Datum; Spiele ohne Datum (TBD) ans Ende
-const timeOf = (g: (typeof allGames)[number]) => g.data.date ? g.data.date.getTime() : Infinity;
-const games = allGames.sort((a,b) => timeOf(a) - timeOf(b));
+const timeOf = (g: Game) => g.data.date ? g.data.date.getTime() : Infinity;
+
+// Gespielt = Sieg/Niederlage/Abbruch eingetragen ODER Termin liegt in der Vergangenheit
+const isPlayed = (g: Game) =>
+  g.data.result === 'win' || g.data.result === 'loss' || g.data.result === 'abandoned' ||
+  (!!g.data.date && g.data.date.getTime() < now - RUNNING_MS);
+
+// Kommende: aufsteigend (naechstes zuerst, TBD ans Ende) · Ergebnisse: neueste zuerst
+const upcoming = allGames.filter(g => !isPlayed(g)).sort((a,b) => timeOf(a) - timeOf(b));
+const played = allGames.filter(isPlayed).sort((a,b) => timeOf(b) - timeOf(a));
+
+const fmtWhen = (g: Game) => {
+  const d = g.data.date;
+  return d ? fmtDate(d) + ' · ' + (g.data.hasTime ? fmtTime(d) + ' Uhr' : 'Uhrzeit TBD') : g.data.dateText;
+};
+
+const sections = [
+  { title: 'Kommende Spiele', games: upcoming, played: false },
+  { title: 'Ergebnisse', games: played, played: true },
+].filter(s => s.games.length > 0);
 ---
 <Base>
   <section class="page-header">
@@ -24,39 +43,51 @@ const games = allGames.sort((a,b) => timeOf(a) - timeOf(b));
 
   <section class="section-tight">
     <div class="container">
-      {games.length === 0 ? (
+      {sections.length === 0 ? (
         <div class="card pad"><p class="p">Noch keine Spiele eingetragen.</p></div>
-      ) : (
-        <div class="card pad">
-          <div class="table-wrap">
-            <table class="table">
-              <thead>
-                <tr><th>Datum</th><th>Team</th><th>Gegner</th><th>Ort</th><th>Heim/Ausw.</th><th></th></tr>
-              </thead>
-              <tbody>
-                {games.map(g => {
-                  const d = g.data.date;
-                  const formattedDate = d
-                    ? fmtDate(d) + ' · ' + (g.data.hasTime ? fmtTime(d) + ' Uhr' : 'Uhrzeit TBD')
-                    : g.data.dateText;
-                  const isUpcoming = d ? d.getTime() >= now - 1000*60*60*3 : true;
-
-                  return (
-                    <tr>
-                      <td style="white-space:nowrap; font-weight:600;">{formattedDate}</td>
-                      <td class="text-orange" style="font-family:var(--font-head); text-transform:uppercase; letter-spacing:.5px; white-space:nowrap;">{g.data.team}</td>
-                      <td style="font-family:var(--font-head); text-transform:uppercase; letter-spacing:.5px;">{g.data.opponent}</td>
-                      <td class="p">{g.data.location && <a class="map-link" href={mapsUrl(g.data.location)} data-maps-q={mapsQuery(g.data.location)} target="_blank" rel="noopener noreferrer" aria-label={'Route zu ' + g.data.location + ' in Karten öffnen'}>📍 {g.data.location}</a>}</td>
-                      <td style="white-space:nowrap;">{g.data.isHome ? 'Heim' : 'Auswärts'}</td>
-                      <td>{isUpcoming ? <span class="badge gold">Upcoming</span> : <span class="badge">Vorbei</span>}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+      ) : sections.map(sec => (
+        <>
+          <h2 class="h3 games-sub">{sec.title}</h2>
+          <div class="card pad">
+            <div class="table-wrap">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Datum</th><th>Team</th><th>Gegner</th><th>Ort</th><th>Heim/Ausw.</th>
+                    <th>{sec.played ? 'Ergebnis' : 'Status'}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sec.games.map(g => {
+                    const r = g.data.result;
+                    return (
+                      <tr>
+                        <td style="white-space:nowrap; font-weight:600;">{fmtWhen(g)}</td>
+                        <td class="text-orange" style="font-family:var(--font-head); text-transform:uppercase; letter-spacing:.5px; white-space:nowrap;">{g.data.team}</td>
+                        <td style="font-family:var(--font-head); text-transform:uppercase; letter-spacing:.5px;">{g.data.opponent}</td>
+                        <td class="p">{g.data.location && <a class="map-link" href={mapsUrl(g.data.location)} data-maps-q={mapsQuery(g.data.location)} target="_blank" rel="noopener noreferrer" aria-label={'Route zu ' + g.data.location + ' in Karten öffnen'}>📍 {g.data.location}</a>}</td>
+                        <td style="white-space:nowrap;">{g.data.isHome ? 'Heim' : 'Auswärts'}</td>
+                        <td style="white-space:nowrap;">
+                          <span style="display:inline-flex; align-items:center; gap:12px;">
+                            {g.data.score && (r === 'win' || r === 'loss' || r === 'abandoned' || !r) && (
+                              <span class="score" title="Tigers : Gegner">{g.data.score}</span>
+                            )}
+                            {r
+                              ? <span class={'badge ' + RESULT_CLASS[r]}>{RESULT_LABEL[r]}</span>
+                              : sec.played
+                                ? <span class="badge">Vorbei</span>
+                                : <span class="badge gold">Upcoming</span>}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
-      )}
+        </>
+      ))}
     </div>
   </section>
   <MapsLinks />

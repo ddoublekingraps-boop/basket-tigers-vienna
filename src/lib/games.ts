@@ -98,3 +98,35 @@ export const mapsQuery = (location: string) =>
 /** Link zu Google Maps (funktioniert ueberall; auf iPhones tauscht ein Script auf Apple Karten). */
 export const mapsUrl = (location: string) =>
   'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(mapsQuery(location));
+
+// ----- Ergebnis / Status -----
+export type GameResult = 'win' | 'loss' | 'abandoned' | 'postponed' | null;
+
+export const RESULT_LABEL: Record<Exclude<GameResult, null>, string> = {
+  win: 'Sieg', loss: 'Niederlage', abandoned: 'Abbruch', postponed: 'Verschoben',
+};
+export const RESULT_CLASS: Record<Exclude<GameResult, null>, string> = {
+  win: 'win', loss: 'loss', abandoned: 'off', postponed: 'off',
+};
+
+const toScore = (v: unknown): number | null => {
+  if (v === null || v === undefined || v === '') return null;
+  const n = typeof v === 'number' ? v : Number(String(v).trim());
+  return Number.isFinite(n) && n >= 0 ? Math.round(n) : null;
+};
+
+/** Status aus dem Admin-Panel lesen; ohne Status wird Sieg/Niederlage aus den Punkten abgeleitet. */
+export function parseResult(status: unknown, us: unknown, them: unknown) {
+  const scoreUs = toScore(us), scoreThem = toScore(them);
+  const s = typeof status === 'string' ? status.trim().toLowerCase() : '';
+  let result: GameResult = null;
+  if (s.startsWith('sieg')) result = 'win';
+  else if (s.startsWith('niederl')) result = 'loss';
+  else if (s.startsWith('abbr')) result = 'abandoned';
+  else if (s.startsWith('versch')) result = 'postponed';
+  else if (scoreUs !== null && scoreThem !== null && scoreUs !== scoreThem) {
+    result = scoreUs > scoreThem ? 'win' : 'loss';
+  }
+  const score = scoreUs !== null && scoreThem !== null ? `${scoreUs} : ${scoreThem}` : '';
+  return { result, score };
+}

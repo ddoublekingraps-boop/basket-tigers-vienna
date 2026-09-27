@@ -59,6 +59,9 @@ collections:
       - { label: "Heim / Auswärts", name: "venue", widget: "select", options: ["Heim", "Auswärts"], default: "Heim", required: false }
       - { label: "Gegner", name: "opponent", widget: "string" }
       - { label: "Ort", name: "location", widget: "string" }
+      - { label: "Ergebnis / Status", name: "status", widget: "select", options: ["Sieg", "Niederlage", "Abbruch", "Verschoben"], required: false, hint: "Leer lassen, solange das Spiel noch nicht gespielt ist. Trägst du unten die Punkte ein, wird Sieg/Niederlage automatisch erkannt." }
+      - { label: "Punkte Tigers", name: "score_us", widget: "number", value_type: "int", min: 0, required: false }
+      - { label: "Punkte Gegner", name: "score_them", widget: "number", value_type: "int", min: 0, required: false }
       - { label: "Event-Info", name: "body", widget: "markdown", required: false }
 
   - name: "trainings"

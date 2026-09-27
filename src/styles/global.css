@@ -142,6 +142,12 @@ h1,h2,h3{font-family:var(--font-head); font-weight:700; line-height:1.02; margin
 .badge.gold{border-color:rgba(255,122,24,.6); color:var(--orange-2)}
 .badge.silver{border-color:var(--line-strong); color:#d7d7df}
 .badge.bronze{border-color:rgba(255,122,24,.3); color:#ffc18a}
+.badge.win{border-color:rgba(62,207,142,.55); color:#5fe0a5; background:rgba(62,207,142,.08)}
+.badge.loss{border-color:rgba(255,93,93,.5); color:#ff8585; background:rgba(255,93,93,.07)}
+.badge.off{border-color:rgba(255,255,255,.22); color:#d7d7df; border-style:dashed}
+.score{font-family:var(--font-head); font-size:18px; letter-spacing:1px; white-space:nowrap; color:#fff}
+.games-sub{margin:34px 0 14px}
+.games-sub:first-child{margin-top:0}
 
 /* grids */
 .grid2{display:grid; grid-template-columns:repeat(2,1fr); gap:18px}

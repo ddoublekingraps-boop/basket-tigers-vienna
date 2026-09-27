@@ -21,10 +21,13 @@ const sponsoren = await getCollection("sponsoren");
 // wenn die Seite schon ein paar Tage nicht neu gebaut wurde.
 const RUNNING_MS = 1000*60*60*3; // ein Spiel gilt ab Tip-Off noch 3h als "aktuell"
 const buildNow = Date.now();
+// Spiele mit eingetragenem Ergebnis (Sieg/Niederlage/Abbruch) nicht mehr anzeigen
+const isFinished = (g: (typeof allGames)[number]) => ['win','loss','abandoned'].includes(g.data.result ?? '');
 const datedUpcoming = allGames
+  .filter(g => !isFinished(g))
   .filter(g => g.data.date && g.data.date.getTime() >= buildNow - RUNNING_MS)
   .sort((a,b) => a.data.date!.getTime() - b.data.date!.getTime());
-const tbdGames = allGames.filter(g => !g.data.date);
+const tbdGames = allGames.filter(g => !g.data.date && !isFinished(g));
 // Termine ohne Datum nur als Notloesung, wenn kein Spiel mit Datum ansteht
 const homeGames = (datedUpcoming.length ? datedUpcoming : tbdGames.slice(0,1)).slice(0, 40);
 
@@ -172,9 +175,9 @@ const teaser = (s, n=110) => { const t = plain(s); return t.length > n ? t.slice
             {homeGames.map((g, i) => {
               const d = g.data.date;
               return (
-                <article class="gc-slide" data-start={d ? String(d.getTime()) : ''} aria-roledescription="Spiel">
+                <article class="gc-slide" data-start={d ? String(d.getTime()) : ''} data-postponed={g.data.result === 'postponed' ? '1' : undefined} aria-roledescription="Spiel">
                   <div class="vs-top">
-                    <span class="badge gold" data-gc-badge>{i === 0 ? 'Nächstes Spiel' : 'Diese Woche'}</span>
+                    <span class={'badge ' + (g.data.result === 'postponed' ? 'off' : 'gold')} data-gc-badge>{g.data.result === 'postponed' ? 'Verschoben' : (i === 0 ? 'Nächstes Spiel' : 'Diese Woche')}</span>
                     <span class="kicker" style="letter-spacing:1.5px;">
                       {d ? fmtDay(d) + (g.data.hasTime ? ' · ' + fmtTime(d) : '') : g.data.dateText}
                     </span>
@@ -224,7 +227,7 @@ const teaser = (s, n=110) => { const t = plain(s); return t.length > n ? t.slice
           if (!show.length) { empty.hidden = false; return; }
           show.forEach((el, i) => {
             const b = el.querySelector('[data-gc-badge]');
-            if (b) b.textContent = i === 0 ? 'Nächstes Spiel' : 'Diese Woche';
+            if (b) b.textContent = el.dataset.postponed ? 'Verschoben' : (i === 0 ? 'Nächstes Spiel' : 'Diese Woche');
             el.setAttribute('aria-label', 'Spiel ' + (i + 1) + ' von ' + show.length);
           });
           if (show.length < 2) return;
