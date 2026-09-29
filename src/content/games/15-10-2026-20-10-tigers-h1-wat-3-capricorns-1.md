@@ -1,7 +1,7 @@
 ---
-team: Tigers H1
-date: 15.10.2026 20:10
-venue: Auswärts
-opponent: WAT 3 Capricorns/1
-location: Boerhaavegasse 15
+team: Tigers H2
+date: 17.10.2026 18:00
+venue: Heim
+opponent: Vienna Giants/1
+location: Stadthalle A
 ---
