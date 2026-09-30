@@ -5,6 +5,7 @@ import MapsLinks from "../components/MapsLinks.astro";
 import { getCollection } from "astro:content";
 import { getImageSize, sponsorLogoSize, sponsorLogoUrl } from "../lib/images";
 import { fmtDay, fmtTime, mapsUrl, mapsQuery } from "../lib/games";
+import { teaserHtml } from "../lib/teaser";
 
 // Echte Pixelmasse des Hero-Logos -> width/height-Attribute ohne erfundenes Ratio
 const heroLogo = "/assets/logo.png";
@@ -47,13 +48,6 @@ const deDate = (d) => d.toLocaleDateString('de-AT', { timeZone: 'Europe/Vienna',
 const deMonth = (d) => d.toLocaleDateString('de-AT', { timeZone: 'Europe/Vienna', month:'short' }).replace('.','');
 
 
-const plain = (s) => s
-  .replace(/!\[[^\]]*\]\([^)]*\)/g, '')
-  .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
-  .replace(/[*_`>#~]/g, '')
-  .replace(/\s+/g, ' ')
-  .trim();
-const teaser = (s, n=110) => { const t = plain(s); return t.length > n ? t.slice(0,n) + '…' : t; };
 ---
 <Base>
 
@@ -311,7 +305,7 @@ const teaser = (s, n=110) => { const t = plain(s); return t.length > n ? t.slice
                   <div class="news-date"><div class="d">{deDate(n.data.date)}</div><div class="m">{deMonth(n.data.date)}</div></div>
                   <div>
                     <h3 class="h3">{n.data.title}</h3>
-                    <p class="p" style="margin-top:6px;">{teaser(n.body)}</p>
+                    <p class="p" style="margin-top:6px;" set:html={teaserHtml(n.body)} />
                   </div>
                 </article>
               ))}

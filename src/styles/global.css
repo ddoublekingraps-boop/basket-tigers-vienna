@@ -286,6 +286,8 @@ h1,h2,h3{font-family:var(--font-head); font-weight:700; line-height:1.02; margin
 .prose p{margin:0 0 14px}
 .prose strong{color:var(--text); font-weight:700}
 .prose a{color:var(--orange); text-decoration:underline; text-underline-offset:3px}
+.news-link{color:var(--orange); text-decoration:underline; text-underline-offset:3px; overflow-wrap:anywhere}
+.news-link:hover{color:var(--orange-2)}
 .prose h2,.prose h3{color:var(--text); margin:22px 0 10px}
 .prose ul,.prose ol{margin:0 0 14px; padding-left:20px}
 .prose li{margin:4px 0}
@@ -526,7 +528,8 @@ h1,h2,h3{font-family:var(--font-head); font-weight:700; line-height:1.02; margin
 
 .founder-img{
   width:100%;
-  aspect-ratio:1 / 1;
+  height:auto;
+  aspect-ratio:4 / 5;
   object-fit:cover;
   object-position:top center;
   border-radius:var(--r-md);
