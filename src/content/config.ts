@@ -1,5 +1,5 @@
 import { defineCollection, z } from 'astro:content';
-import { parseGameDate, parseResult, DEFAULT_TEAM } from '../lib/games';
+import { parseGameDate, parseResult, normalizeTeam } from '../lib/games';
 
 const news = defineCollection({
   type: 'content',
@@ -33,7 +33,7 @@ const games = defineCollection({
   schema: z.object({
     // Datum als Text aus dem Admin-Panel, z.B. "26.09.2026 20:00" (oder leer / TBD)
     date: z.any().optional(),
-    // Eigene Mannschaft, z.B. "Tigers H1" (leer -> "Tigers")
+    // Eigene Mannschaft, z.B. "Tigers/1" (leer -> "Tigers")
     team: z.string().nullish(),
     // Heim- oder Auswaertsspiel (leer -> Heim)
     venue: z.string().nullish(),
@@ -49,7 +49,7 @@ const games = defineCollection({
     const raw = typeof g.date === 'string' ? g.date.trim() : '';
     return {
       opponent: g.opponent.trim(),
-      team: g.team?.trim() || DEFAULT_TEAM,
+      team: normalizeTeam(g.team),
       isHome: !/^ausw/i.test((g.venue ?? '').trim()),
       location: (g.location ?? '').trim(),
       date,                                   // echtes Date oder null (= TBD)
@@ -61,13 +61,35 @@ const games = defineCollection({
   }),
 });
 
+const WEEKDAYS = ['Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag','Sonntag'];
+
 const trainings = defineCollection({
   type: 'content',
   schema: z.object({
-    weekday: z.string(),
-    time: z.string(),
-    location: z.string(),
-    note: z.string().optional(),
+    // Team, z.B. "Herren 1"
+    team: z.string().nullish(),
+    // Mehrere Tage moeglich (Admin-Panel: Mehrfachauswahl)
+    weekdays: z.union([z.array(z.string()), z.string()]).nullish(),
+    // alte Einzel-Auswahl, wird weiterhin verstanden
+    weekday: z.string().nullish(),
+    time: z.string().nullish(),
+    location: z.string().nullish(),
+    note: z.string().nullish(),
+  }).transform((t) => {
+    const raw = t.weekdays ?? t.weekday ?? [];
+    const list = (Array.isArray(raw) ? raw : [raw]).map((d) => String(d).trim()).filter(Boolean);
+    const days = list.sort((a, b) => {
+      const ia = WEEKDAYS.indexOf(a), ib = WEEKDAYS.indexOf(b);
+      return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+    });
+    return {
+      team: (t.team ?? '').trim(),
+      days,
+      firstDay: days.length ? WEEKDAYS.indexOf(days[0]) : 99,
+      time: (t.time ?? '').trim(),
+      location: (t.location ?? '').trim(),
+      note: (t.note ?? '').trim(),
+    };
   }),
 });
 

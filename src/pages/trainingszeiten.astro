@@ -2,8 +2,21 @@
 import Base from "../layouts/Base.astro";
 import { getCollection } from "astro:content";
 
-const order = ["Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag","Sonntag"];
-const trainings = (await getCollection("trainings")).sort((a,b)=> order.indexOf(a.data.weekday) - order.indexOf(b.data.weekday));
+// Reihenfolge der Teams; unbekannte Teams danach alphabetisch
+const teamOrder = ["Herren 1", "Herren 2", "Herren 3", "U19"];
+const rank = (team: string) => { const i = teamOrder.indexOf(team); return i < 0 ? 99 : i; };
+
+const trainings = (await getCollection("trainings")).sort((a, b) =>
+  rank(a.data.team) - rank(b.data.team) ||
+  a.data.team.localeCompare(b.data.team, "de") ||
+  a.data.firstDay - b.data.firstDay
+);
+
+// "Montag & Freitag" bzw. "Montag, Mittwoch & Freitag"
+const joinDays = (days: string[]) =>
+  days.length <= 1 ? (days[0] ?? "") : days.slice(0, -1).join(", ") + " & " + days[days.length - 1];
+
+const hasNotes = trainings.some(t => t.data.note);
 ---
 <Base>
   <section class="page-header">
@@ -24,15 +37,16 @@ const trainings = (await getCollection("trainings")).sort((a,b)=> order.indexOf(
           <div class="table-wrap">
             <table class="table">
               <thead>
-                <tr><th>Tag</th><th>Zeit</th><th>Ort</th><th>Notiz</th></tr>
+                <tr><th>Team</th><th>Tage</th><th>Zeit</th><th>Ort</th>{hasNotes && <th>Notiz</th>}</tr>
               </thead>
               <tbody>
                 {trainings.map(t => (
                   <tr>
-                    <td style="font-family:var(--font-head); text-transform:uppercase; letter-spacing:.5px;">{t.data.weekday}</td>
-                    <td style="white-space:nowrap;">{t.data.time}</td>
+                    <td class="text-orange" style="font-family:var(--font-head); text-transform:uppercase; letter-spacing:.5px; white-space:nowrap;">{t.data.team}</td>
+                    <td style="font-family:var(--font-head); text-transform:uppercase; letter-spacing:.5px;">{joinDays(t.data.days)}</td>
+                    <td style="white-space:nowrap; font-weight:600;">{t.data.time}{t.data.time && !/uhr/i.test(t.data.time) ? " Uhr" : ""}</td>
                     <td>{t.data.location}</td>
-                    <td class="p">{t.data.note ?? ""}</td>
+                    {hasNotes && <td class="p">{t.data.note}</td>}
                   </tr>
                 ))}
               </tbody>

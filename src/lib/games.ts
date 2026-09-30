@@ -11,6 +11,13 @@
 export const TZ = 'Europe/Vienna';
 export const DEFAULT_TEAM = 'Tigers';
 
+/** Team-Namen vereinheitlichen: alte Schreibweise "Tigers H1" wird zu "Tigers/1". */
+export const normalizeTeam = (t: string | null | undefined) => {
+  const v = (t ?? '').trim();
+  if (!v) return DEFAULT_TEAM;
+  return v.replace(/^tigers\s*h\s*(\d)$/i, 'Tigers/$1');
+};
+
 export type ParsedGameDate = { date: Date | null; hasTime: boolean };
 
 /** Offset (ms) der Zeitzone Wien zu einem bestimmten UTC-Zeitpunkt. */
