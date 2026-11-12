@@ -1,6 +1,6 @@
 ---
-name: "Julian Zagrajsek"
+name: Julian Zagrajsek
 number: 4
-team: "Basket Tigers 1"
-position: "Spieler"
+team: Basket Tigers 2
+position: Spieler
 ---
