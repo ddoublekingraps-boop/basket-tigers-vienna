@@ -1,9 +1,8 @@
 ---
 team: Tigers/1
-date: 27.09.2026 19:00
+date: 28.11.2026 20:00
 venue: Heim
 opponent: UAB/7 Spartans H2
-location: " Pastorstraße 29 1210 Wien"
-status: Verschoben
+location: Mollardgasse 87/Top 212, 1060 Wien
+status: null
 ---
-ABGESAGT
