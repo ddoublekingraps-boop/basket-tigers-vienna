@@ -107,13 +107,13 @@ export const mapsUrl = (location: string) =>
   'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(mapsQuery(location));
 
 // ----- Ergebnis / Status -----
-export type GameResult = 'win' | 'loss' | 'abandoned' | 'postponed' | null;
+export type GameResult = 'win' | 'loss' | 'abandoned' | 'postponed' | 'cancelled' | null;
 
 export const RESULT_LABEL: Record<Exclude<GameResult, null>, string> = {
-  win: 'Sieg', loss: 'Niederlage', abandoned: 'Abbruch', postponed: 'Verschoben',
+  win: 'Sieg', loss: 'Niederlage', abandoned: 'Abbruch', postponed: 'Verschoben', cancelled: 'Abgesagt',
 };
 export const RESULT_CLASS: Record<Exclude<GameResult, null>, string> = {
-  win: 'win', loss: 'loss', abandoned: 'off', postponed: 'off',
+  win: 'win', loss: 'loss', abandoned: 'off', postponed: 'off', cancelled: 'off',
 };
 
 const toScore = (v: unknown): number | null => {
@@ -131,6 +131,7 @@ export function parseResult(status: unknown, us: unknown, them: unknown) {
   else if (s.startsWith('niederl')) result = 'loss';
   else if (s.startsWith('abbr')) result = 'abandoned';
   else if (s.startsWith('versch')) result = 'postponed';
+  else if (s.startsWith('abges')) result = 'cancelled';
   else if (scoreUs !== null && scoreThem !== null && scoreUs !== scoreThem) {
     result = scoreUs > scoreThem ? 'win' : 'loss';
   }

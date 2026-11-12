@@ -169,9 +169,9 @@ const deMonth = (d) => d.toLocaleDateString('de-AT', { timeZone: 'Europe/Vienna'
             {homeGames.map((g, i) => {
               const d = g.data.date;
               return (
-                <article class="gc-slide" data-start={d ? String(d.getTime()) : ''} data-postponed={g.data.result === 'postponed' ? '1' : undefined} aria-roledescription="Spiel">
+                <article class="gc-slide" data-start={d ? String(d.getTime()) : ''} data-status-label={g.data.result === 'postponed' ? 'Verschoben' : g.data.result === 'cancelled' ? 'Abgesagt' : undefined} aria-roledescription="Spiel">
                   <div class="vs-top">
-                    <span class={'badge ' + (g.data.result === 'postponed' ? 'off' : 'gold')} data-gc-badge>{g.data.result === 'postponed' ? 'Verschoben' : (i === 0 ? 'Nächstes Spiel' : 'Diese Woche')}</span>
+                    <span class={'badge ' + (g.data.result === 'postponed' || g.data.result === 'cancelled' ? 'off' : 'gold')} data-gc-badge>{g.data.result === 'postponed' ? 'Verschoben' : g.data.result === 'cancelled' ? 'Abgesagt' : (i === 0 ? 'Nächstes Spiel' : 'Diese Woche')}</span>
                     <span class="kicker" style="letter-spacing:1.5px;">
                       {d ? fmtDay(d) + (g.data.hasTime ? ' · ' + fmtTime(d) : '') : g.data.dateText}
                     </span>
@@ -221,7 +221,7 @@ const deMonth = (d) => d.toLocaleDateString('de-AT', { timeZone: 'Europe/Vienna'
           if (!show.length) { empty.hidden = false; return; }
           show.forEach((el, i) => {
             const b = el.querySelector('[data-gc-badge]');
-            if (b) b.textContent = el.dataset.postponed ? 'Verschoben' : (i === 0 ? 'Nächstes Spiel' : 'Diese Woche');
+            if (b) b.textContent = el.dataset.statusLabel || (i === 0 ? 'Nächstes Spiel' : 'Diese Woche');
             el.setAttribute('aria-label', 'Spiel ' + (i + 1) + ' von ' + show.length);
           });
           if (show.length < 2) return;

@@ -39,7 +39,7 @@ const games = defineCollection({
     venue: z.string().nullish(),
     opponent: z.string(),
     location: z.string().nullish(),
-    // Ergebnis: Sieg / Niederlage / Abbruch / Verschoben (leer = noch nicht gespielt)
+    // Ergebnis: Sieg / Niederlage / Abbruch / Verschoben / Abgesagt (leer = noch nicht gespielt)
     status: z.string().nullish(),
     score_us: z.any().optional(),
     score_them: z.any().optional(),
@@ -54,7 +54,7 @@ const games = defineCollection({
       location: (g.location ?? '').trim(),
       date,                                   // echtes Date oder null (= TBD)
       hasTime,                                // false -> Uhrzeit TBD
-      result,                                 // 'win' | 'loss' | 'abandoned' | 'postponed' | null
+      result,                                 // 'win' | 'loss' | 'abandoned' | 'postponed' | 'cancelled' | null
       score,                                  // z.B. "78 : 65" (Tigers zuerst) oder ''
       dateText: date ? '' : (raw && !/^tbd$/i.test(raw) ? raw : 'TBD'), // Anzeige-Text wenn kein Datum erkannt
     };
