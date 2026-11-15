@@ -4,4 +4,7 @@ date: 15.11.2026 14:00
 venue: Auswärts
 opponent: WAT 3 Capricorns/4
 location: Stadthalle B
+status: Niederlage
+score_us: 55
+score_them: 87
 ---
